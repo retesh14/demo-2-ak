@@ -25,33 +25,49 @@ const DEFAULTS = {
   heading: 'Session Catalog',
 };
 
+// Track -> anonymous-safe catalog URL (the track-filtered view). The deep
+// /session/<id> links require an event-registered login ("attendee not found
+// on this event"), so tiles point at the track-filtered catalog instead — it
+// always renders real sessions for anyone.
+const CATALOG = 'https://www.sap.com/events/sapphire/virtual/flow/sap/sv26/catalog/page/catalog';
+const TRACK_URL = {
+  'AI Services & Models': `${CATALOG}?search.track=option_1733949722572`,
+  'Build & Integrate': `${CATALOG}?search.track=option_1733949733770`,
+  'Cloud ERP': `${CATALOG}?search.track=option_1733949738690`,
+  'Data & Analytics': `${CATALOG}?search.track=option_1733949727757`,
+  Joule: `${CATALOG}?search.track=1773765539720001Z4Qz`,
+  'Autonomous Supply Chain Management': `${CATALOG}?search.track=option_1733949766806`,
+};
+const trackHref = (track) => TRACK_URL[track] || CATALOG;
+
 // Mock sessions mirror the shape our worker normalizes RainFocus into.
+// hrefs use the track-filtered catalog (anonymous-safe), not gated session links.
 const MOCK = {
   source: 'mock',
   sessions: [
     {
-      id: '1774887882560001Dn04', title: 'Global keynote: The Beginning of Better', track: 'Joule', type: 'Keynote', abstract: 'How SAP provides the foundation of applications and data that AI needs to deliver business outcomes.', href: 'https://www.sap.com/events/sapphire/virtual/flow/sap/sv26/catalog/page/catalog/session/1774887882560001Dn04',
+      id: '1774887882560001Dn04', title: 'Global keynote: The Beginning of Better', track: 'Joule', type: 'Keynote', abstract: 'How SAP provides the foundation of applications and data that AI needs to deliver business outcomes.', href: trackHref('Joule'),
     },
     {
-      id: '1774887883045001eJnq', title: 'Customer keynote: Connected to win', track: 'Cloud ERP', type: 'Keynote', abstract: 'Real value is created when a moment that demands change turns into momentum.', href: 'https://www.sap.com/events/sapphire/virtual/flow/sap/sv26/catalog/page/catalog/session/1774887883045001eJnq',
+      id: '1774887883045001eJnq', title: 'Customer keynote: Connected to win', track: 'Cloud ERP', type: 'Keynote', abstract: 'Real value is created when a moment that demands change turns into momentum.', href: trackHref('Cloud ERP'),
     },
     {
-      id: '1776267993114001kR7a', title: 'The beginning of better decisions, made in motion', track: 'Data & Analytics', type: 'Session', abstract: 'See how SAP connects signals across finance, supply chain, procurement, and HCM to bring the right decision together.', href: 'https://www.sap.com/events/sapphire/virtual/flow/sap/sv26/catalog/page/catalog/session/1776267993114001kR7a',
+      id: '1776267993114001kR7a', title: 'The beginning of better decisions, made in motion', track: 'Data & Analytics', type: 'Session', abstract: 'See how SAP connects signals across finance, supply chain, procurement, and HCM to bring the right decision together.', href: trackHref('Data & Analytics'),
     },
     {
-      id: '1776707736559001bE5d', title: 'A unified platform for your future', track: 'AI Services & Models', type: 'Session', abstract: 'SAP’s unified platform embeds AI directly into operations to help CIOs scale trusted, agentic AI.', href: 'https://www.sap.com/events/sapphire/virtual/flow/sap/sv26/catalog/page/catalog/session/1776707736559001bE5d',
+      id: '1776707736559001bE5d', title: 'A unified platform for your future', track: 'AI Services & Models', type: 'Session', abstract: 'SAP’s unified platform embeds AI directly into operations to help CIOs scale trusted, agentic AI.', href: trackHref('AI Services & Models'),
     },
     {
-      id: '1774553764776001FfEP', title: 'CFO power moves for 2026: Strategic finance innovation', track: 'Cloud ERP', type: 'Session', abstract: 'SAP and BCG on redefining finance with agentic AI that shifts CFO focus from reacting to shaping outcomes.', href: 'https://www.sap.com/events/sapphire/virtual/flow/sap/sv26/catalog/page/catalog/session/1774553764776001FfEP',
+      id: '1774553764776001FfEP', title: 'CFO power moves for 2026: Strategic finance innovation', track: 'Cloud ERP', type: 'Session', abstract: 'SAP and BCG on redefining finance with agentic AI that shifts CFO focus from reacting to shaping outcomes.', href: trackHref('Cloud ERP'),
     },
     {
-      id: '1777492393240001BiPA', title: 'Meet Joule: The future of work', track: 'Joule', type: 'Session', abstract: 'How the Joule solution is transforming enterprise software today and where it’s headed next.', href: 'https://www.sap.com/events/sapphire/virtual/flow/sap/sv26/catalog/page/catalog/session/1777492393240001BiPA',
+      id: '1777492393240001BiPA', title: 'Meet Joule: The future of work', track: 'Joule', type: 'Session', abstract: 'How the Joule solution is transforming enterprise software today and where it’s headed next.', href: trackHref('Joule'),
     },
     {
-      id: 'sc-01', title: 'Autonomous supply chain in action', track: 'Autonomous Supply Chain Management', type: 'Session', abstract: 'Orchestrate your supply chain as a single connected system that senses, analyzes, and acts in real time.', href: 'https://www.sap.com/events/sapphire/virtual/flow/sap/sv26/catalog/page/catalog',
+      id: 'sc-01', title: 'Autonomous supply chain in action', track: 'Autonomous Supply Chain Management', type: 'Session', abstract: 'Orchestrate your supply chain as a single connected system that senses, analyzes, and acts in real time.', href: trackHref('Autonomous Supply Chain Management'),
     },
     {
-      id: 'bi-01', title: 'Build & integrate with SAP BTP', track: 'Build & Integrate', type: 'Workshop', abstract: 'Extend and build AI-supported business applications and processes across your enterprise.', href: 'https://www.sap.com/events/sapphire/virtual/flow/sap/sv26/catalog/page/catalog',
+      id: 'bi-01', title: 'Build & integrate with SAP BTP', track: 'Build & Integrate', type: 'Workshop', abstract: 'Extend and build AI-supported business applications and processes across your enterprise.', href: trackHref('Build & Integrate'),
     },
   ],
 };

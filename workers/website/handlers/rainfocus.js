@@ -18,17 +18,19 @@
  * demo renders even where this worker isn't running (e.g. the aem.page preview).
  */
 
+// Anonymous-safe track-filtered catalog links (not gated /session/<id> links).
+const CATALOG = 'https://www.sap.com/events/sapphire/virtual/flow/sap/sv26/catalog/page/catalog';
 const MOCK = {
   source: 'mock-worker',
   sessions: [
     {
-      id: 'kw-1', title: 'Global keynote: The Beginning of Better', track: 'Joule', type: 'Keynote', abstract: 'How SAP provides the foundation of applications and data that AI needs.', href: '#',
+      id: 'kw-1', title: 'Global keynote: The Beginning of Better', track: 'Joule', type: 'Keynote', abstract: 'How SAP provides the foundation of applications and data that AI needs.', href: `${CATALOG}?search.track=1773765539720001Z4Qz`,
     },
     {
-      id: 'kw-2', title: 'A unified platform for your future', track: 'AI Services & Models', type: 'Session', abstract: 'Embedding AI directly into operations to scale trusted, agentic AI.', href: '#',
+      id: 'kw-2', title: 'A unified platform for your future', track: 'AI Services & Models', type: 'Session', abstract: 'Embedding AI directly into operations to scale trusted, agentic AI.', href: `${CATALOG}?search.track=option_1733949722572`,
     },
     {
-      id: 'kw-3', title: 'Autonomous supply chain in action', track: 'Autonomous Supply Chain Management', type: 'Session', abstract: 'Sense, analyze, and act across your supply chain in real time.', href: '#',
+      id: 'kw-3', title: 'Autonomous supply chain in action', track: 'Autonomous Supply Chain Management', type: 'Session', abstract: 'Sense, analyze, and act across your supply chain in real time.', href: `${CATALOG}?search.track=option_1733949766806`,
     },
   ],
 };
