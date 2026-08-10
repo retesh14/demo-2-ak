@@ -12,8 +12,15 @@
 
 import { fetchSchedule, fetchFromAem } from './handlers/aem.js';
 import fetchDaSc from './handlers/dasc.js';
+import fetchRainFocus from './handlers/rainfocus.js';
 
 const ROUTES = [
+  // Proxy the RainFocus session catalog under our own origin (same-domain,
+  // like SAP's /flow/). Injects the API key server-side; see handlers/rainfocus.js.
+  {
+    match: (path) => path.startsWith('/rf-api/'),
+    handler: fetchRainFocus,
+  },
   // Handle schedule manifests
   {
     match: (path) => path.includes('/schedules/') && path.endsWith('json'),

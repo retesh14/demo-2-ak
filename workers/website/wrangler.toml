@@ -5,5 +5,14 @@ keep_vars = true
 
 vars = { AEM_ORG = "aemsites", AEM_SITE = "author-kit" }
 
+# RainFocus proxy (/rf-api/*) — see handlers/rainfocus.js.
+# Non-secret vars can live here; the API KEY must be set as a secret, NEVER committed:
+#   wrangler secret put RAINFOCUS_API_KEY
+# Optional non-secret vars (uncomment + set per environment):
+#   RAINFOCUS_API_URL     = "https://events.rainfocus.com/api/search"
+#   RAINFOCUS_API_PROFILE = "<apiProfile / widget id>"
+#   RAINFOCUS_EVENT_ID    = "<event id>"
+# With no RAINFOCUS_API_KEY set, /rf-api/sessions returns mock data.
+
 [env.dev]
 vars = { AEM_ORG = "aemsites", AEM_SITE = "author-kit" }
