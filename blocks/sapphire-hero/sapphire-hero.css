@@ -1,0 +1,74 @@
+.sapphire-hero {
+  /* SAP Sapphire brand tones */
+  --sapphire-navy: #0a1a2f;
+  --sapphire-navy-2: #12345a;
+  --sapphire-cta-blue: #0070f2;
+
+  background: linear-gradient(135deg, var(--sapphire-navy) 0%, var(--sapphire-navy-2) 100%);
+  color: #eaecee;
+  padding: var(--spacing-xxl) var(--spacing-l);
+
+  .sapphire-hero-inner {
+    max-width: var(--grid-container-width);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .sapphire-hero-heading {
+    margin: 0 auto var(--spacing-m);
+    max-width: 900px;
+    color: #fff;
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .sapphire-hero-subcopy {
+    margin: 0 auto var(--spacing-xl);
+    max-width: 620px;
+    color: #cdd6e0;
+    font-size: var(--body-font-size-l);
+    line-height: var(--body-line-height);
+  }
+
+  .sapphire-hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-m);
+    justify-content: center;
+  }
+
+  .sapphire-hero-cta {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-size: var(--body-font-size-m);
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .sapphire-hero-cta:hover {
+    opacity: 0.9;
+  }
+
+  .sapphire-hero-cta-primary {
+    color: #fff;
+    background-color: var(--sapphire-cta-blue);
+    border-color: var(--sapphire-cta-blue);
+  }
+
+  .sapphire-hero-cta-secondary {
+    color: #fff;
+    background: transparent;
+    border-color: rgb(255 255 255 / 60%);
+  }
+
+  @media (width <= 600px) {
+    .sapphire-hero-cta {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+}
