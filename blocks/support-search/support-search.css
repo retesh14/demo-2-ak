@@ -1,0 +1,103 @@
+.support-search {
+  /* Matches the live SAP Support Portal panel */
+  --support-search-blue: #0040b0;
+  --support-search-max: 700px;
+
+  background-color: var(--support-search-blue);
+  color: #fff;
+  padding: var(--spacing-xxl) var(--spacing-l);
+
+  .support-search-inner {
+    max-width: var(--support-search-max);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .support-search-heading {
+    margin: 0 0 var(--spacing-m);
+    color: #fff;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .support-search-message {
+    margin: 0 auto var(--spacing-l);
+    max-width: 620px;
+    color: #fff;
+    font-size: var(--body-font-size-m);
+    line-height: var(--body-line-height);
+  }
+
+  .support-search-form {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    width: 100%;
+    max-width: 684px;
+    margin: 0 auto;
+    padding: 4px 4px 4px 8px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border-radius: 24px;
+  }
+
+  .support-search-input {
+    flex: 1;
+    min-width: 0;
+    height: 40px;
+    padding: 0 12px;
+    border: 0;
+    background: transparent;
+    color: var(--color-dark);
+    font-family: inherit;
+    font-size: var(--body-font-size-m);
+  }
+
+  .support-search-input::placeholder {
+    color: var(--color-gray-500);
+  }
+
+  .support-search-input:focus {
+    outline: none;
+  }
+
+  .support-search-form:focus-within {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+
+  .support-search-submit {
+    flex: 0 0 auto;
+    height: 40px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: 20px;
+    background-color: var(--support-search-blue);
+    color: #fff;
+    font-family: inherit;
+    font-size: var(--body-font-size-m);
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .support-search-submit:hover {
+    opacity: 0.9;
+  }
+
+  .support-search-submit:focus-visible {
+    outline: 2px solid var(--support-search-blue);
+    outline-offset: 2px;
+  }
+
+  @media (width <= 600px) {
+    .support-search-heading {
+      font-size: var(--heading-font-size-l);
+    }
+
+    .support-search-submit {
+      padding: 0 14px;
+    }
+  }
+}
