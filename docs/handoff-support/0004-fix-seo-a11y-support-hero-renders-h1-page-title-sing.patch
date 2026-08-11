@@ -1,0 +1,32 @@
+From cd06601732ae440ed86cd8b4ce50cb9fb09d3087 Mon Sep 17 00:00:00 2001
+From: "EMA (Cardinal Health EDS docs)" <noreply@localhost>
+Date: Tue, 11 Aug 2026 21:08:04 +0000
+Subject: [PATCH 4/4] fix(seo/a11y): support-hero renders <h1> (page title +
+ single top-level heading)
+
+The hero title is the page's main heading, so emit <h1> instead of <h2>.
+Gives the page a proper title for SEO and satisfies the "page has one h1"
+a11y check. Heading order stays sequential (h1 -> h2 sections -> h3 cards).
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+---
+ blocks/support-hero/support-hero.js | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/blocks/support-hero/support-hero.js b/blocks/support-hero/support-hero.js
+index 67e486e..b99b8d8 100644
+--- a/blocks/support-hero/support-hero.js
++++ b/blocks/support-hero/support-hero.js
+@@ -54,7 +54,8 @@ export default async function init(el) {
+   const inner = h(
+     'div',
+     { class: 'support-hero-inner' },
+-    h('h2', { class: 'support-hero-heading', text: config.heading }),
++    // The hero title is the page's main heading -> <h1> (page SEO title + a11y).
++    h('h1', { class: 'support-hero-heading', text: config.heading }),
+     h('p', { class: 'support-hero-message', text: config.message }),
+   );
+ 
+-- 
+2.39.5
+

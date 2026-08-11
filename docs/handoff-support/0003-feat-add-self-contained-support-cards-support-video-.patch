@@ -1,0 +1,412 @@
+From 076dcef76bc08becf1c4c3bb6821694c93edbf5a Mon Sep 17 00:00:00 2001
+From: "EMA (Cardinal Health EDS docs)" <noreply@localhost>
+Date: Tue, 11 Aug 2026 21:05:34 +0000
+Subject: [PATCH 3/4] feat: add self-contained support-cards + support-video
+ blocks
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- support-cards: removes the external sapphire-cards dependency (fixes the
+  "Error" fallback on this clean branch). Optional image with explicit
+  width/height (no CLS) + lazy loading; title, desc, CTA.
+- support-video: lazy click-to-load youtube-nocookie embed with reserved
+  16:9 space (no CLS, no third-party JS on load).
+Both keep prefers-reduced-motion support. Only support-* blocks on this
+branch — clean, conflict-free for the colleague's author-kit repo.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+---
+ blocks/support-cards/support-cards.css | 101 +++++++++++++++++++++++++
+ blocks/support-cards/support-cards.js  |  87 +++++++++++++++++++++
+ blocks/support-video/support-video.css |  78 +++++++++++++++++++
+ blocks/support-video/support-video.js  |  90 ++++++++++++++++++++++
+ 4 files changed, 356 insertions(+)
+ create mode 100644 blocks/support-cards/support-cards.css
+ create mode 100644 blocks/support-cards/support-cards.js
+ create mode 100644 blocks/support-video/support-video.css
+ create mode 100644 blocks/support-video/support-video.js
+
+diff --git a/blocks/support-cards/support-cards.css b/blocks/support-cards/support-cards.css
+new file mode 100644
+index 0000000..78a4e17
+--- /dev/null
++++ b/blocks/support-cards/support-cards.css
+@@ -0,0 +1,101 @@
++.support-cards {
++  --support-blue: #0040b0;
++
++  display: grid;
++  grid-template-columns: repeat(3, 1fr);
++  gap: var(--spacing-l);
++  max-width: var(--grid-container-width);
++  margin: var(--spacing-xxl) auto;
++}
++
++.support-cards .support-card {
++  display: flex;
++  background-color: light-dark(var(--color-light), var(--color-gray-900));
++  border: 1px solid light-dark(var(--color-gray-200), var(--color-gray-700));
++  border-radius: 12px;
++  overflow: hidden;
++  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
++}
++
++.support-cards .support-card:hover {
++  box-shadow: 0 4px 16px 0 rgb(0 0 0 / 12%);
++  transform: translateY(-2px);
++}
++
++.support-cards .support-card-inner {
++  display: flex;
++  flex-direction: column;
++  width: 100%;
++}
++
++.support-cards .support-card-image {
++  /* Reserve 16:9 space to avoid layout shift while the image loads */
++  position: relative;
++  aspect-ratio: 16 / 9;
++  overflow: hidden;
++  background-color: light-dark(var(--color-gray-100), var(--color-gray-800));
++}
++
++.support-cards .support-card-image img,
++.support-cards .support-card-image picture {
++  width: 100%;
++  height: 100%;
++  object-fit: cover;
++  display: block;
++}
++
++.support-cards .support-card-title {
++  margin: 0;
++  padding: var(--spacing-l) var(--spacing-l) 0;
++  font-size: var(--heading-font-size-xs);
++  color: light-dark(var(--color-dark), var(--color-light));
++}
++
++.support-cards .support-card-desc {
++  margin: var(--spacing-s) 0 0;
++  padding: 0 var(--spacing-l);
++  font-size: var(--body-font-size-m);
++  line-height: var(--body-line-height);
++  color: light-dark(var(--color-gray-700), var(--color-gray-300));
++}
++
++.support-cards .support-card-cta {
++  margin-top: auto;
++  padding: var(--spacing-m) var(--spacing-l) var(--spacing-l);
++  display: inline-flex;
++  align-items: center;
++  gap: 6px;
++  color: var(--support-blue);
++  font-weight: 600;
++  text-decoration: none;
++}
++
++.support-cards .support-card-cta:hover {
++  text-decoration: underline;
++}
++
++.support-cards .support-card:hover .support-card-arrow {
++  transform: translateX(4px);
++}
++
++.support-cards .support-card-arrow {
++  transition: transform 0.2s ease-in-out;
++}
++
++@media (width <= 900px) {
++  .support-cards {
++    grid-template-columns: repeat(2, 1fr);
++  }
++}
++
++@media (width <= 600px) {
++  .support-cards {
++    grid-template-columns: 1fr;
++  }
++}
++
++@media (prefers-reduced-motion: reduce) {
++  .support-cards * {
++    transition: none !important;
++  }
++}
+diff --git a/blocks/support-cards/support-cards.js b/blocks/support-cards/support-cards.js
+new file mode 100644
+index 0000000..84257fe
+--- /dev/null
++++ b/blocks/support-cards/support-cards.js
+@@ -0,0 +1,87 @@
++/*
++ * Support Cards block — SAP Support Portal (POC)
++ *
++ * Self-contained responsive card grid (no external block dependency), used for
++ * the Features promo, "Additional resources", and Community sections. Each card
++ * may have an optional image, a title, description, and a CTA link.
++ *
++ * Lighthouse-friendly: images get explicit width/height (no CLS) and lazy
++ * loading below the fold; the grid reserves its own space.
++ *
++ * Each authored row = one card, in a cell containing (any of):
++ *   - an image (a <picture>/<img>, or a bare image URL in a link/paragraph)
++ *   - a heading (card title)
++ *   - paragraph(s) (description)
++ *   - a link (the CTA)
++ */
++
++const IMG_W = 600;
++const IMG_H = 338; // 16:9 default to reserve space and avoid layout shift
++
++function decorateImage(inner) {
++  // Case 1: authored <picture>/<img> already present.
++  let pic = inner.querySelector('picture');
++  let img = inner.querySelector('img');
++
++  // Case 2: a bare image URL (link or text) — build a picture from it.
++  if (!pic && !img) {
++    const imgLink = [...inner.querySelectorAll('a')].find((a) => /\.(jpe?g|png|webp|svg|gif)(\?|$)/i.test(a.getAttribute('href') || ''));
++    if (imgLink) {
++      const src = imgLink.getAttribute('href');
++      img = document.createElement('img');
++      img.src = src;
++      img.alt = imgLink.textContent.trim() || '';
++      imgLink.remove();
++      const wrap = document.createElement('p');
++      wrap.append(img);
++      inner.insertAdjacentElement('afterbegin', wrap);
++    }
++  }
++
++  img = inner.querySelector('img');
++  pic = inner.querySelector('picture');
++  if (img) {
++    // Explicit dimensions prevent CLS; lazy since cards are typically below fold.
++    if (!img.getAttribute('width')) img.setAttribute('width', IMG_W);
++    if (!img.getAttribute('height')) img.setAttribute('height', IMG_H);
++    if (!img.getAttribute('loading')) img.setAttribute('loading', 'lazy');
++    if (!img.hasAttribute('alt')) img.setAttribute('alt', '');
++    const holder = pic || img;
++    const container = document.createElement('div');
++    container.className = 'support-card-image';
++    holder.replaceWith(container);
++    container.append(holder);
++  }
++}
++
++function decorateCard(row) {
++  row.classList.add('support-card');
++  const inner = row.querySelector(':scope > div') || row;
++  inner.classList.add('support-card-inner');
++
++  decorateImage(inner);
++
++  const heading = inner.querySelector('h1, h2, h3, h4, h5, h6');
++  if (heading) heading.classList.add('support-card-title');
++
++  const cta = inner.querySelector('a');
++  if (cta) {
++    cta.classList.add('support-card-cta');
++    inner.append(cta);
++    const arrow = document.createElement('span');
++    arrow.className = 'support-card-arrow';
++    arrow.setAttribute('aria-hidden', 'true');
++    arrow.textContent = '→';
++    cta.append(arrow);
++  }
++
++  inner.querySelectorAll(':scope > p').forEach((p) => {
++    if (p.querySelector('img')) return;
++    if (!p.classList.contains('support-card-cta')) p.classList.add('support-card-desc');
++  });
++}
++
++export default async function init(el) {
++  const rows = [...el.querySelectorAll(':scope > div')];
++  rows.forEach(decorateCard);
++}
+diff --git a/blocks/support-video/support-video.css b/blocks/support-video/support-video.css
+new file mode 100644
+index 0000000..1be3932
+--- /dev/null
++++ b/blocks/support-video/support-video.css
+@@ -0,0 +1,78 @@
++.support-video {
++  --support-blue: #0040b0;
++
++  max-width: 900px;
++  margin: var(--spacing-l) auto;
++  padding: 0 var(--spacing-l);
++}
++
++.support-video .support-video-frame,
++.support-video .support-video-embed {
++  position: relative;
++  aspect-ratio: 16 / 9;
++  border-radius: 8px;
++  overflow: hidden;
++}
++
++.support-video .support-video-frame {
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  background: linear-gradient(135deg, #001942 0%, var(--support-blue) 100%);
++}
++
++.support-video .support-video-play-btn {
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  gap: var(--spacing-s);
++  width: 100%;
++  height: 100%;
++  border: 0;
++  background: transparent;
++  color: #fff;
++  cursor: pointer;
++  transition: background-color 0.2s ease-in-out;
++}
++
++.support-video .support-video-play-btn:hover {
++  background-color: rgb(0 0 0 / 20%);
++}
++
++.support-video .support-video-play {
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  width: 64px;
++  height: 64px;
++  border-radius: 50%;
++  background-color: rgb(255 255 255 / 18%);
++  font-size: 24px;
++  transition: transform 0.2s ease-in-out;
++}
++
++.support-video .support-video-play-btn:hover .support-video-play {
++  transform: scale(1.08);
++}
++
++.support-video .support-video-note {
++  margin: 0;
++  color: #fff;
++  font-size: var(--body-font-size-m);
++  font-weight: 600;
++}
++
++.support-video .support-video-embed iframe {
++  position: absolute;
++  inset: 0;
++  width: 100%;
++  height: 100%;
++  border: 0;
++}
++
++@media (prefers-reduced-motion: reduce) {
++  .support-video * {
++    transition: none !important;
++  }
++}
+diff --git a/blocks/support-video/support-video.js b/blocks/support-video/support-video.js
+new file mode 100644
+index 0000000..b55bd1e
+--- /dev/null
++++ b/blocks/support-video/support-video.js
+@@ -0,0 +1,90 @@
++/*
++ * Support Video block — SAP Support Portal (POC)
++ *
++ * A lazy, click-to-load video. Shows a facade (title + play button) over a
++ * reserved 16:9 area; clicking swaps in a youtube-nocookie iframe. Nothing
++ * loads until click — good for Lighthouse (no third-party JS/network on load)
++ * and for consent. Reserved aspect-ratio means zero layout shift.
++ *
++ * Authored config rows (optional): video (YouTube id), title.
++ * Or a single authored YouTube link is accepted as the source.
++ */
++
++const DEFAULTS = {
++  video: '',
++  title: 'Watch the video',
++};
++
++function h(tag, attrs = {}, ...children) {
++  const node = document.createElement(tag);
++  for (const [key, value] of Object.entries(attrs)) {
++    if (value !== undefined && value !== null) {
++      if (key === 'class') node.className = value;
++      else if (key === 'text') node.textContent = value;
++      else node.setAttribute(key, value);
++    }
++  }
++  for (const child of children) if (child) node.append(child);
++  return node;
++}
++
++function parseYouTubeId(url) {
++  if (!url) return '';
++  try {
++    const u = new URL(url, window.location.href);
++    if (u.searchParams.get('v')) return u.searchParams.get('v');
++    return u.pathname.split('/').pop();
++  } catch {
++    return url;
++  }
++}
++
++function readConfig(el) {
++  const config = {};
++  el.querySelectorAll(':scope > div').forEach((row) => {
++    const cells = row.querySelectorAll(':scope > div');
++    if (cells.length >= 2) {
++      const key = cells[0].textContent.trim().toLowerCase();
++      if (['video', 'title'].includes(key)) config[key] = cells[1].textContent.trim();
++    } else {
++      const link = row.querySelector('a[href]');
++      if (link) config.video = parseYouTubeId(link.getAttribute('href'));
++    }
++  });
++  return config;
++}
++
++function buildEmbed(videoId) {
++  const wrap = h('div', { class: 'support-video-embed' });
++  const iframe = document.createElement('iframe');
++  iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?rel=0&autoplay=1`;
++  iframe.title = 'Video player';
++  iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
++  iframe.setAttribute('allowfullscreen', '');
++  iframe.setAttribute('loading', 'lazy');
++  wrap.append(iframe);
++  return wrap;
++}
++
++export default async function init(el) {
++  const config = { ...DEFAULTS, ...readConfig(el) };
++  el.textContent = '';
++
++  const frame = h('div', { class: 'support-video-frame' });
++  if (config.video) {
++    const btn = h(
++      'button',
++      { class: 'support-video-play-btn', type: 'button', 'aria-label': `Play: ${config.title}` },
++      h('span', { class: 'support-video-play', 'aria-hidden': 'true', text: '▶' }),
++      h('span', { class: 'support-video-note', text: config.title }),
++    );
++    btn.addEventListener('click', () => {
++      frame.replaceWith(buildEmbed(config.video));
++    });
++    frame.append(btn);
++  } else {
++    frame.append(h('p', { class: 'support-video-note', text: 'Video unavailable' }));
++  }
++
++  el.append(frame);
++}
+-- 
+2.39.5
+

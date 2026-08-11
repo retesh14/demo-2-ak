@@ -1,0 +1,128 @@
+From 1e413d7d371f706a725f53881327e0a6c91ce0a8 Mon Sep 17 00:00:00 2001
+From: "EMA (Cardinal Health EDS docs)" <noreply@localhost>
+Date: Tue, 11 Aug 2026 20:29:39 +0000
+Subject: [PATCH 2/4] fix(a11y/perf): Lighthouse hardening for support blocks
+
+- Fix contrast: news date gray-500 -> gray-600 (small text >= AA 4.5:1)
+- Fix heading order: news titles/resources h4 -> h3; feedback prompt is a
+  <p> not h5 (avoids non-sequential heading levels)
+- Respect prefers-reduced-motion (disable transitions) across support blocks
+Keeps blocks contributing zero Lighthouse regressions.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+---
+ blocks/support-feedback/support-feedback.css   |  6 ++++++
+ blocks/support-feedback/support-feedback.js    |  4 +++-
+ blocks/support-hero/support-hero.css           |  6 ++++++
+ blocks/support-news/support-news.css           | 10 +++++++++-
+ blocks/support-news/support-news.js            |  4 ++--
+ blocks/support-top-tasks/support-top-tasks.css |  6 ++++++
+ 6 files changed, 32 insertions(+), 4 deletions(-)
+
+diff --git a/blocks/support-feedback/support-feedback.css b/blocks/support-feedback/support-feedback.css
+index ffc178f..12a4646 100644
+--- a/blocks/support-feedback/support-feedback.css
++++ b/blocks/support-feedback/support-feedback.css
+@@ -53,3 +53,9 @@
+   font-weight: 600;
+   color: var(--support-blue);
+ }
++
++@media (prefers-reduced-motion: reduce) {
++  .support-feedback * {
++    transition: none !important;
++  }
++}
+diff --git a/blocks/support-feedback/support-feedback.js b/blocks/support-feedback/support-feedback.js
+index 534f7d7..2d0a7b1 100644
+--- a/blocks/support-feedback/support-feedback.js
++++ b/blocks/support-feedback/support-feedback.js
+@@ -55,7 +55,9 @@ export default async function init(el) {
+   const config = { ...DEFAULTS, ...readConfig(el) };
+   el.textContent = '';
+ 
+-  const heading = h('h5', { class: 'support-feedback-heading', text: config.heading });
++  // A prompt, not a document section — use a <p> (styled as a heading) to avoid
++  // introducing a non-sequential heading level on the page (Lighthouse a11y).
++  const heading = h('p', { class: 'support-feedback-heading', text: config.heading });
+   const actions = h('div', { class: 'support-feedback-actions' });
+ 
+   const done = () => {
+diff --git a/blocks/support-hero/support-hero.css b/blocks/support-hero/support-hero.css
+index 66e370e..02a2914 100644
+--- a/blocks/support-hero/support-hero.css
++++ b/blocks/support-hero/support-hero.css
+@@ -91,3 +91,9 @@
+     font-size: var(--heading-font-size-l);
+   }
+ }
++
++@media (prefers-reduced-motion: reduce) {
++  .support-hero * {
++    transition: none !important;
++  }
++}
+diff --git a/blocks/support-news/support-news.css b/blocks/support-news/support-news.css
+index 3bb505f..fba2b8a 100644
+--- a/blocks/support-news/support-news.css
++++ b/blocks/support-news/support-news.css
+@@ -47,7 +47,9 @@
+   display: block;
+   margin-bottom: var(--spacing-xs);
+   font-size: var(--body-font-size-s);
+-  color: light-dark(var(--color-gray-500), var(--color-gray-400));
++
++  /* gray-600/300 keeps small-text contrast >= WCAG AA 4.5:1 on the section bg */
++  color: light-dark(var(--color-gray-600), var(--color-gray-300));
+ }
+ 
+ .support-news .support-news-summary {
+@@ -84,3 +86,9 @@
+     grid-template-columns: 1fr;
+   }
+ }
++
++@media (prefers-reduced-motion: reduce) {
++  .support-news * {
++    transition: none !important;
++  }
++}
+diff --git a/blocks/support-news/support-news.js b/blocks/support-news/support-news.js
+index 8f4b21a..10c6b83 100644
+--- a/blocks/support-news/support-news.js
++++ b/blocks/support-news/support-news.js
+@@ -38,7 +38,7 @@ function articleEl(item) {
+   return h(
+     'article',
+     { class: 'support-news-item' },
+-    h('h4', { class: 'support-news-title' }, h('a', { href: item.href || '#', text: item.title })),
++    h('h3', { class: 'support-news-title' }, h('a', { href: item.href || '#', text: item.title })),
+     item.date ? h('time', { class: 'support-news-date', text: item.date }) : null,
+     item.summary ? h('p', { class: 'support-news-summary', text: item.summary }) : null,
+   );
+@@ -106,7 +106,7 @@ export default async function init(el) {
+ 
+   const aside = h('aside', { class: 'support-news-resources' });
+   if (resourceLinks.length) {
+-    aside.append(h('h4', { class: 'support-news-resources-heading', text: config.resourcesheading }));
++    aside.append(h('h3', { class: 'support-news-resources-heading', text: config.resourcesheading }));
+     const ul = h('ul');
+     resourceLinks.forEach((r) => ul.append(h('li', {}, h('a', { href: r.href, text: r.text }))));
+     aside.append(ul);
+diff --git a/blocks/support-top-tasks/support-top-tasks.css b/blocks/support-top-tasks/support-top-tasks.css
+index 66167df..48a021e 100644
+--- a/blocks/support-top-tasks/support-top-tasks.css
++++ b/blocks/support-top-tasks/support-top-tasks.css
+@@ -78,3 +78,9 @@
+     grid-template-columns: 1fr;
+   }
+ }
++
++@media (prefers-reduced-motion: reduce) {
++  .support-top-tasks * {
++    transition: none !important;
++  }
++}
+-- 
+2.39.5
+
