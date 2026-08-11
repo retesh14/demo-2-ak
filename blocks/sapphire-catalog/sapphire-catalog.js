@@ -21,7 +21,11 @@
  */
 
 const DEFAULTS = {
-  endpoint: '/rf-api/sessions',
+  // Same-origin data endpoint. Two ways to serve it:
+  //  - EDS sheet (works on aem.page today): /rf-api/sessions.json
+  //  - Cloudflare worker (needs CF deploy): /rf-api/sessions
+  // The block fetches whatever the author configures; both return the same shape.
+  endpoint: '/rf-api/sessions.json',
   heading: 'Session Catalog',
 };
 
@@ -102,11 +106,16 @@ function readConfig(el) {
 function normalize(json) {
   if (!json) return null;
   if (Array.isArray(json.sessions)) return { source: json.source || 'live', sessions: json.sessions };
-  // RainFocus-native shape: { items|sessionData|attendeeInterests: [...] }
-  const raw = json.items || json.sessionData || json.data?.items;
+  // Supported shapes:
+  //  - RainFocus-native: { items | sessionData: [...] } or { data: { items: [...] } }
+  //  - EDS sheet endpoint: { total, limit, offset, data: [ {row}, ... ] }
+  const raw = json.items
+    || json.sessionData
+    || json.data?.items
+    || (Array.isArray(json.data) ? json.data : null);
   if (Array.isArray(raw)) {
     return {
-      source: 'live',
+      source: json.source || (Array.isArray(json.data) ? 'eds-sheet' : 'live'),
       sessions: raw.map((s) => ({
         id: s.sessionID || s.id,
         title: s.title || s.name,
