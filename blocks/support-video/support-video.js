@@ -13,6 +13,10 @@
 const DEFAULTS = {
   video: '',
   title: 'Watch the video',
+  // Kaltura support (used by the real SAP Support page). Provide kaltura as
+  // "partnerId/entryId" (e.g. "1921661/1_9f86h3l8"); uiconf is optional.
+  kaltura: '',
+  uiconf: '53208852',
 };
 
 function h(tag, attrs = {}, ...children) {
@@ -45,7 +49,7 @@ function readConfig(el) {
     const cells = row.querySelectorAll(':scope > div');
     if (cells.length >= 2) {
       const key = cells[0].textContent.trim().toLowerCase();
-      if (['video', 'title'].includes(key)) config[key] = cells[1].textContent.trim();
+      if (['video', 'title', 'kaltura', 'uiconf'].includes(key)) config[key] = cells[1].textContent.trim();
     } else {
       const link = row.querySelector('a[href]');
       if (link) config.video = parseYouTubeId(link.getAttribute('href'));
@@ -54,12 +58,18 @@ function readConfig(el) {
   return config;
 }
 
-function buildEmbed(videoId) {
+function buildEmbed(config) {
   const wrap = h('div', { class: 'support-video-embed' });
   const iframe = document.createElement('iframe');
-  iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?rel=0&autoplay=1`;
+  if (config.kaltura) {
+    // Kaltura player (the real SAP Support video host): "partnerId/entryId".
+    const [partnerId, entryId] = config.kaltura.split('/');
+    iframe.src = `https://cdnapisec.kaltura.com/p/${encodeURIComponent(partnerId)}/embedPlaykitJs/uiconf_id/${encodeURIComponent(config.uiconf)}?iframeembed=true&entry_id=${encodeURIComponent(entryId)}&autoplay=true`;
+  } else {
+    iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(config.video)}?rel=0&autoplay=1`;
+  }
   iframe.title = 'Video player';
-  iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+  iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
   iframe.setAttribute('allowfullscreen', '');
   iframe.setAttribute('loading', 'lazy');
   wrap.append(iframe);
@@ -71,7 +81,7 @@ export default async function init(el) {
   el.textContent = '';
 
   const frame = h('div', { class: 'support-video-frame' });
-  if (config.video) {
+  if (config.kaltura || config.video) {
     const btn = h(
       'button',
       { class: 'support-video-play-btn', type: 'button', 'aria-label': `Play: ${config.title}` },
@@ -79,7 +89,7 @@ export default async function init(el) {
       h('span', { class: 'support-video-note', text: config.title }),
     );
     btn.addEventListener('click', () => {
-      frame.replaceWith(buildEmbed(config.video));
+      frame.replaceWith(buildEmbed(config));
     });
     frame.append(btn);
   } else {
