@@ -1,0 +1,109 @@
+.sapphire-keynotes {
+  --sapphire-cta-blue: #0070f2;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-l);
+  max-width: var(--grid-container-width);
+  margin: var(--spacing-xxl) auto;
+}
+
+.sapphire-keynotes .sapphire-keynote {
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(255 255 255 / 6%);
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.sapphire-keynotes .sapphire-keynote:hover {
+  box-shadow: 0 6px 20px 0 rgb(0 0 0 / 40%);
+  transform: translateY(-2px);
+}
+
+.sapphire-keynotes .sapphire-keynote-banner {
+  height: 140px;
+  background: linear-gradient(135deg, #0a1a2f 0%, #12345a 100%);
+}
+
+.sapphire-keynotes .sapphire-keynote-banner.accent-blue {
+  background: linear-gradient(135deg, #001942 0%, #0058e4 100%);
+}
+
+.sapphire-keynotes .sapphire-keynote-banner.accent-purple {
+  background: linear-gradient(135deg, #251139 0%, #843ccb 100%);
+}
+
+.sapphire-keynotes .sapphire-keynote-banner.accent-teal {
+  background: linear-gradient(135deg, #041e21 0%, #108a96 100%);
+}
+
+.sapphire-keynotes .sapphire-keynote-banner.accent-magenta {
+  background: linear-gradient(135deg, #3b002a 0%, #bd0084 100%);
+}
+
+.sapphire-keynotes .sapphire-keynote-banner.accent-green {
+  background: linear-gradient(135deg, #072009 0%, #1e9029 100%);
+}
+
+.sapphire-keynotes .sapphire-keynote-banner.accent-orange {
+  background: linear-gradient(135deg, #2d1500 0%, #c76000 100%);
+}
+
+.sapphire-keynotes .sapphire-keynote-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  padding: var(--spacing-l);
+  flex: 1;
+}
+
+.sapphire-keynotes .sapphire-keynote-title {
+  margin: 0;
+  font-size: var(--heading-font-size-xs);
+  color: #fff;
+}
+
+.sapphire-keynotes .sapphire-keynote-abstract {
+  margin: 0;
+  font-size: var(--body-font-size-s);
+  line-height: var(--body-line-height);
+  color: #cdd6e0;
+}
+
+.sapphire-keynotes .sapphire-keynote-cta {
+  margin-top: auto;
+  padding-top: var(--spacing-s);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #5898ff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sapphire-keynotes .sapphire-keynote-cta:hover {
+  text-decoration: underline;
+}
+
+.sapphire-keynotes .sapphire-keynote:hover .sapphire-keynote-arrow {
+  transform: translateX(4px);
+}
+
+.sapphire-keynotes .sapphire-keynote-arrow {
+  transition: transform 0.2s ease-in-out;
+}
+
+@media (width <= 900px) {
+  .sapphire-keynotes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width <= 600px) {
+  .sapphire-keynotes {
+    grid-template-columns: 1fr;
+  }
+}
