@@ -80,6 +80,18 @@ function renderSpeakers(speakersStr) {
   return wrap;
 }
 
+/** Build the lazy YouTube embed (matches the project's youtube block convention). */
+function buildEmbed(videoId) {
+  const wrap = h('div', { class: 'sapphire-session-embed' });
+  const iframe = document.createElement('iframe');
+  iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?rel=0&autoplay=1`;
+  iframe.title = 'On-demand session replay';
+  iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+  iframe.setAttribute('allowfullscreen', '');
+  wrap.append(iframe);
+  return wrap;
+}
+
 function renderSession(el, config, session) {
   const back = h('p', { class: 'sapphire-session-back' }, h('a', { href: config.catalog, text: '← Back to session catalog' }));
 
@@ -88,13 +100,27 @@ function renderSession(el, config, session) {
   badges.append(h('span', { class: 'sapphire-session-badge badge-status', text: 'On Demand' }));
   if (session.track) badges.append(h('span', { class: 'sapphire-session-badge badge-track', text: session.track }));
 
-  // Video area — a facade (the real video is login-gated on SAP; this mirrors that).
-  const video = h(
-    'div',
-    { class: 'sapphire-session-video' },
-    h('div', { class: 'sapphire-session-play', 'aria-hidden': 'true', text: '▶' }),
-    h('p', { class: 'sapphire-session-video-note', text: 'On-demand replay' }),
-  );
+  // Video area. If the session has a video id, the facade is a click-to-load
+  // button that swaps in a real YouTube embed (lazy — nothing loads until click,
+  // which is good for performance and consent). Without an id it stays static.
+  const video = h('div', { class: 'sapphire-session-video' });
+  if (session.video) {
+    const btn = h(
+      'button',
+      { class: 'sapphire-session-play-btn', type: 'button', 'aria-label': `Play: ${session.title}` },
+      h('span', { class: 'sapphire-session-play', 'aria-hidden': 'true', text: '▶' }),
+      h('span', { class: 'sapphire-session-video-note', text: 'Watch the on-demand replay' }),
+    );
+    btn.addEventListener('click', () => {
+      video.replaceWith(buildEmbed(session.video));
+    });
+    video.append(btn);
+  } else {
+    video.append(
+      h('div', { class: 'sapphire-session-play', 'aria-hidden': 'true', text: '▶' }),
+      h('p', { class: 'sapphire-session-video-note', text: 'Replay available at the event' }),
+    );
+  }
 
   const main = h(
     'div',
