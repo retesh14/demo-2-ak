@@ -149,12 +149,17 @@ function renderCards(listEl, sessions) {
     return;
   }
   sessions.forEach((s) => {
+    // Badge row mirrors the real SAP catalog: type · On Demand · track.
+    const badges = h('div', { class: 'sapphire-catalog-badges' });
+    if (s.type) badges.append(h('span', { class: 'sapphire-catalog-badge badge-type', text: s.type }));
+    badges.append(h('span', { class: 'sapphire-catalog-badge badge-status', text: 'On Demand' }));
+    if (s.track) badges.append(h('span', { class: 'sapphire-catalog-badge badge-track', text: s.track }));
+
     const card = h(
       'article',
       { class: 'sapphire-catalog-card' },
-      h('span', { class: 'sapphire-catalog-type', text: s.type || 'Session' }),
+      badges,
       h('h3', { class: 'sapphire-catalog-title', text: s.title }),
-      s.track ? h('span', { class: 'sapphire-catalog-track', text: s.track }) : null,
       s.abstract ? h('p', { class: 'sapphire-catalog-abstract', text: s.abstract }) : null,
       h('a', { class: 'sapphire-catalog-cta', href: s.href || '#' }, h('span', { text: 'Watch on demand' }), h('span', { class: 'sapphire-catalog-arrow', 'aria-hidden': 'true', text: '→' })),
     );
@@ -166,14 +171,22 @@ export default async function init(el) {
   const config = { ...DEFAULTS, ...readConfig(el) };
   el.textContent = '';
 
-  const heading = h('h2', { class: 'sapphire-catalog-heading', text: config.heading });
+  // Dark header band (mirrors the real SAP catalog: big title + event subtitle).
+  const band = h(
+    'div',
+    { class: 'sapphire-catalog-band' },
+    h('h1', { class: 'sapphire-catalog-band-title', text: config.heading }),
+    h('p', { class: 'sapphire-catalog-band-subtitle', text: config.subtitle || 'SAP Sapphire Virtual' }),
+  );
+
   const search = h('input', { class: 'sapphire-catalog-search', type: 'search', placeholder: 'Search sessions', 'aria-label': 'Search sessions' });
   const trackSel = h('select', { class: 'sapphire-catalog-filter', 'aria-label': 'Filter by track' });
   const count = h('p', { class: 'sapphire-catalog-count', role: 'status' });
   const list = h('div', { class: 'sapphire-catalog-list' });
   const controls = h('div', { class: 'sapphire-catalog-controls' }, search, trackSel);
+  const body = h('div', { class: 'sapphire-catalog-body' }, controls, count, list);
 
-  el.append(heading, controls, count, list);
+  el.append(band, body);
 
   const data = await loadSessions(config.endpoint);
   const all = data.sessions;
