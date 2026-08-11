@@ -153,7 +153,8 @@
 
 @media (width >= 900px) {
   .support-carousel {
-    --sc-card-w: calc((100% - 2 * var(--spacing-l)) / 3);
+    /* 4 cards per view (matches the real SAP Additional Resources carousel) */
+    --sc-card-w: calc((100% - 3 * var(--spacing-l)) / 4);
   }
 }
 

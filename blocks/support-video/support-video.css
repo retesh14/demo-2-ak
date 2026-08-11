@@ -1,8 +1,11 @@
 .support-video {
   --support-blue: #0040b0;
 
+  width: 100%;
   max-width: 640px;
-  margin: var(--spacing-l) 0;
+  margin: var(--spacing-l) auto;
+  box-sizing: border-box;
+  padding: 0 var(--spacing-l);
 }
 
 .support-video .support-video-frame,
@@ -18,6 +21,25 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #001942 0%, var(--support-blue) 100%);
+}
+
+/* Real poster thumbnail (cover) with a dim overlay for play-button contrast */
+.support-video .support-video-frame.has-poster {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.support-video .support-video-frame.has-poster::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 35%);
+}
+
+.support-video .support-video-frame.has-poster .support-video-play-btn {
+  position: relative;
+  z-index: 1;
 }
 
 .support-video .support-video-play-btn {

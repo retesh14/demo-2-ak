@@ -17,6 +17,8 @@ const DEFAULTS = {
   // "partnerId/entryId" (e.g. "1921661/1_9f86h3l8"); uiconf is optional.
   kaltura: '',
   uiconf: '53208852',
+  // Poster image shown on the facade before play (real thumbnail vs. gradient).
+  poster: '',
 };
 
 function h(tag, attrs = {}, ...children) {
@@ -49,7 +51,7 @@ function readConfig(el) {
     const cells = row.querySelectorAll(':scope > div');
     if (cells.length >= 2) {
       const key = cells[0].textContent.trim().toLowerCase();
-      if (['video', 'title', 'kaltura', 'uiconf'].includes(key)) config[key] = cells[1].textContent.trim();
+      if (['video', 'title', 'kaltura', 'uiconf', 'poster'].includes(key)) config[key] = cells[1].textContent.trim();
     } else {
       const link = row.querySelector('a[href]');
       if (link) config.video = parseYouTubeId(link.getAttribute('href'));
@@ -81,6 +83,10 @@ export default async function init(el) {
   el.textContent = '';
 
   const frame = h('div', { class: 'support-video-frame' });
+  if (config.poster) {
+    frame.classList.add('has-poster');
+    frame.style.backgroundImage = `url("${config.poster}")`;
+  }
   if (config.kaltura || config.video) {
     const btn = h(
       'button',
