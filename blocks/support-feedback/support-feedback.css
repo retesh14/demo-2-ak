@@ -53,3 +53,9 @@
   font-weight: 600;
   color: var(--support-blue);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .support-feedback * {
+    transition: none !important;
+  }
+}
