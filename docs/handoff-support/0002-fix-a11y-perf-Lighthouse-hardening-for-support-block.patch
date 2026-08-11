@@ -1,7 +1,7 @@
 From 1e413d7d371f706a725f53881327e0a6c91ce0a8 Mon Sep 17 00:00:00 2001
 From: "EMA (Cardinal Health EDS docs)" <noreply@localhost>
 Date: Tue, 11 Aug 2026 20:29:39 +0000
-Subject: [PATCH 2/4] fix(a11y/perf): Lighthouse hardening for support blocks
+Subject: [PATCH 2/6] fix(a11y/perf): Lighthouse hardening for support blocks
 
 - Fix contrast: news date gray-500 -> gray-600 (small text >= AA 4.5:1)
 - Fix heading order: news titles/resources h4 -> h3; feedback prompt is a

@@ -1,7 +1,7 @@
 From 076dcef76bc08becf1c4c3bb6821694c93edbf5a Mon Sep 17 00:00:00 2001
 From: "EMA (Cardinal Health EDS docs)" <noreply@localhost>
 Date: Tue, 11 Aug 2026 21:05:34 +0000
-Subject: [PATCH 3/4] feat: add self-contained support-cards + support-video
+Subject: [PATCH 3/6] feat: add self-contained support-cards + support-video
  blocks
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8

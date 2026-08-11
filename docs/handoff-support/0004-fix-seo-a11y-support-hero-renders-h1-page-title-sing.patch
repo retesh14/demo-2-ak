@@ -1,7 +1,7 @@
 From cd06601732ae440ed86cd8b4ce50cb9fb09d3087 Mon Sep 17 00:00:00 2001
 From: "EMA (Cardinal Health EDS docs)" <noreply@localhost>
 Date: Tue, 11 Aug 2026 21:08:04 +0000
-Subject: [PATCH 4/4] fix(seo/a11y): support-hero renders <h1> (page title +
+Subject: [PATCH 4/6] fix(seo/a11y): support-hero renders <h1> (page title +
  single top-level heading)
 
 The hero title is the page's main heading, so emit <h1> instead of <h2>.
