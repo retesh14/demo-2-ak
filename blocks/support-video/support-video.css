@@ -1,9 +1,8 @@
 .support-video {
   --support-blue: #0040b0;
 
-  max-width: 900px;
-  margin: var(--spacing-l) auto;
-  padding: 0 var(--spacing-l);
+  max-width: 640px;
+  margin: var(--spacing-l) 0;
 }
 
 .support-video .support-video-frame,

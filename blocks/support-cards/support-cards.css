@@ -8,6 +8,54 @@
   margin: var(--spacing-xxl) auto;
 }
 
+/* Banner variant: a single full-width horizontal feature (image left, text
+ * right) — used for the Community award section. Add class "banner" or it
+ * auto-applies when the grid holds exactly one card (see JS). */
+.support-cards.banner {
+  grid-template-columns: 1fr;
+}
+
+.support-cards.banner .support-card {
+  flex-direction: row;
+}
+
+.support-cards.banner .support-card-inner {
+  flex-direction: row;
+  align-items: center;
+}
+
+.support-cards.banner .support-card-image {
+  flex: 0 0 40%;
+  aspect-ratio: 16 / 10;
+}
+
+.support-cards.banner .support-card-inner > :not(.support-card-image) {
+  margin-left: 0;
+}
+
+.support-cards.banner .support-card-title,
+.support-cards.banner .support-card-desc,
+.support-cards.banner .support-card-cta {
+  padding-left: var(--spacing-xl);
+  padding-right: var(--spacing-xl);
+}
+
+.support-cards.banner .support-card-title {
+  padding-top: var(--spacing-l);
+}
+
+@media (width <= 700px) {
+  .support-cards.banner .support-card,
+  .support-cards.banner .support-card-inner {
+    flex-direction: column;
+  }
+
+  .support-cards.banner .support-card-image {
+    flex-basis: auto;
+    width: 100%;
+  }
+}
+
 .support-cards .support-card {
   display: flex;
   background-color: light-dark(var(--color-light), var(--color-gray-900));

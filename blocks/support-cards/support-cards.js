@@ -83,5 +83,8 @@ function decorateCard(row) {
 
 export default async function init(el) {
   const rows = [...el.querySelectorAll(':scope > div')];
+  // A single card reads best as a full-width horizontal banner (e.g. the
+  // Community award), unless the author already chose a variant.
+  if (rows.length === 1 && !el.classList.contains('banner')) el.classList.add('banner');
   rows.forEach(decorateCard);
 }
