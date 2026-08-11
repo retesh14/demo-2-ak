@@ -54,7 +54,8 @@ export default async function init(el) {
   const inner = h(
     'div',
     { class: 'support-hero-inner' },
-    h('h2', { class: 'support-hero-heading', text: config.heading }),
+    // The hero title is the page's main heading -> <h1> (page SEO title + a11y).
+    h('h1', { class: 'support-hero-heading', text: config.heading }),
     h('p', { class: 'support-hero-message', text: config.message }),
   );
 
