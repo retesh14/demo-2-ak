@@ -1,0 +1,160 @@
+.sapphire-session {
+  --sapphire-cta-blue: #0070f2;
+  --ss-bg: #0a0f14;
+  --ss-card-bg: #1d232a;
+  --ss-border: #2e3b48;
+  --ss-text: #eaecee;
+  --ss-muted: #aeb8c2;
+
+  background-color: var(--ss-bg);
+  color: var(--ss-text);
+  padding: var(--spacing-l) var(--spacing-l) var(--spacing-xxl);
+}
+
+.sapphire-session .sapphire-session-back {
+  max-width: 1040px;
+  margin: 0 auto var(--spacing-l);
+}
+
+.sapphire-session .sapphire-session-back a {
+  color: #5898ff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sapphire-session .sapphire-session-back a:hover {
+  text-decoration: underline;
+}
+
+.sapphire-session .sapphire-session-inner {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--spacing-xl);
+  max-width: 1040px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+/* Video facade */
+.sapphire-session .sapphire-session-video {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-s);
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, #0a1a2f 0%, #12345a 100%);
+  border: 1px solid var(--ss-border);
+  border-radius: 8px;
+}
+
+.sapphire-session .sapphire-session-play {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: rgb(255 255 255 / 15%);
+  color: #fff;
+  font-size: 24px;
+}
+
+.sapphire-session .sapphire-session-video-note {
+  margin: 0;
+  color: var(--ss-muted);
+  font-size: var(--body-font-size-s);
+}
+
+.sapphire-session .sapphire-session-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-m);
+}
+
+.sapphire-session .sapphire-session-badge {
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: var(--body-font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #fff;
+  background-color: rgb(255 255 255 / 14%);
+}
+
+.sapphire-session .sapphire-session-badge.badge-type {
+  background-color: var(--sapphire-cta-blue);
+}
+
+.sapphire-session .sapphire-session-badge.badge-status {
+  background-color: #187220;
+}
+
+.sapphire-session .sapphire-session-title {
+  margin: 0 0 var(--spacing-m);
+  font-size: var(--heading-font-size-l);
+  color: #fff;
+  line-height: 1.15;
+}
+
+.sapphire-session .sapphire-session-abstract {
+  margin: 0 0 var(--spacing-l);
+  font-size: var(--body-font-size-m);
+  line-height: var(--body-line-height);
+  color: var(--ss-muted);
+}
+
+.sapphire-session .sapphire-session-h2 {
+  margin: 0 0 var(--spacing-m);
+  font-size: var(--heading-font-size-xs);
+  color: var(--ss-text);
+}
+
+.sapphire-session .sapphire-session-speaker-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+}
+
+.sapphire-session .sapphire-session-speaker {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-m);
+}
+
+.sapphire-session .sapphire-session-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--sapphire-cta-blue);
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--body-font-size-s);
+}
+
+.sapphire-session .sapphire-session-speaker-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.sapphire-session .sapphire-session-speaker-name {
+  font-weight: 600;
+  color: var(--ss-text);
+}
+
+.sapphire-session .sapphire-session-speaker-role {
+  font-size: var(--body-font-size-s);
+  color: var(--ss-muted);
+}
+
+@media (width <= 800px) {
+  .sapphire-session .sapphire-session-inner {
+    grid-template-columns: 1fr;
+  }
+}

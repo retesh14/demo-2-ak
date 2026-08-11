@@ -27,6 +27,10 @@ const DEFAULTS = {
   // The block fetches whatever the author configures; both return the same shape.
   endpoint: '/rf-api/sessions.json',
   heading: 'Session Catalog',
+  // In-domain session detail page. Cards link here (?id=<id>) so the flow is
+  // landing → catalog → session, all in our domain — mirroring the live site
+  // (no hop out to sap.com). Set detail to '' to fall back to each row's href.
+  detail: '/sapphire-session-demo',
 };
 
 // Track -> anonymous-safe catalog URL (the track-filtered view). The deep
@@ -142,7 +146,13 @@ async function loadSessions(endpoint) {
   }
 }
 
-function renderCards(listEl, sessions) {
+/** Where a card's CTA points: in-domain session page (?id=) or the row href. */
+function ctaHref(config, s) {
+  if (config.detail && s.id) return `${config.detail}?id=${encodeURIComponent(s.id)}`;
+  return s.href || '#';
+}
+
+function renderCards(listEl, sessions, config) {
   listEl.textContent = '';
   if (!sessions.length) {
     listEl.append(h('p', { class: 'sapphire-catalog-empty', text: 'No sessions match your search.' }));
@@ -161,7 +171,7 @@ function renderCards(listEl, sessions) {
       badges,
       h('h3', { class: 'sapphire-catalog-title', text: s.title }),
       s.abstract ? h('p', { class: 'sapphire-catalog-abstract', text: s.abstract }) : null,
-      h('a', { class: 'sapphire-catalog-cta', href: s.href || '#' }, h('span', { text: 'Watch on demand' }), h('span', { class: 'sapphire-catalog-arrow', 'aria-hidden': 'true', text: '→' })),
+      h('a', { class: 'sapphire-catalog-cta', href: ctaHref(config, s) }, h('span', { text: 'Watch on demand' }), h('span', { class: 'sapphire-catalog-arrow', 'aria-hidden': 'true', text: '→' })),
     );
     listEl.append(card);
   });
@@ -205,7 +215,7 @@ export default async function init(el) {
       return matchesQ && matchesT;
     });
     count.textContent = `${filtered.length} session${filtered.length === 1 ? '' : 's'}${data.source === 'mock' ? ' (demo data)' : ''}`;
-    renderCards(list, filtered);
+    renderCards(list, filtered, config);
   };
 
   search.addEventListener('input', apply);
