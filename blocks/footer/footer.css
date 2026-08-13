@@ -1,13 +1,17 @@
-/* SAP events footer — dark, 4 link columns + social + copyright. Responsive. */
+/* SAP footer — light grey, 4 link columns + social + copyright. Matches the
+ * source sap.com footer: light background, dark slate-blue headings, dark-grey
+ * links. Responsive. */
 footer {
-  --sap-footer-bg: #222;
-  --sap-footer-fg: #e5e5e5;
-  --sap-footer-muted: #999;
-  --sap-footer-link: #d1d1d1;
-  --sap-footer-blue: #4db1ff;
+  --sap-footer-bg: #f5f6f7;
+  --sap-footer-fg: #545454;
+  --sap-footer-muted: #5b6b7c;
+  --sap-footer-heading: #354a5f;
+  --sap-footer-link: #1d2d3e;
+  --sap-footer-blue: #0070f2;
 
   background-color: var(--sap-footer-bg);
   color: var(--sap-footer-fg);
+  border-top: 1px solid #e5e5e5;
 }
 
 footer a {
@@ -17,7 +21,7 @@ footer a {
 
 footer a:hover,
 footer a:focus {
-  color: #fff;
+  color: var(--sap-footer-blue);
   text-decoration: underline;
 }
 
@@ -42,19 +46,19 @@ footer p {
 /* Brand / contact row */
 footer .footer-content > .section:first-child {
   padding-bottom: 24px;
-  border-bottom: 1px solid #3a3a3a;
+  border-bottom: 1px solid #dcdee0;
   margin-bottom: 24px;
 }
 
 footer .footer-content > .section:first-child a {
-  color: #fff;
+  color: var(--sap-footer-link);
 }
 
 footer .brand-section a,
 footer .footer-content > .section:first-child p:first-child a {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--sap-footer-blue);
 }
 
 /* footer wordmark: hide placeholder icon, keep the "SAP" text */
@@ -64,7 +68,7 @@ footer .footer-content > .section:first-child .icon-logo {
 
 /* Link columns section — headings + lists */
 footer h6 {
-  color: #fff;
+  color: var(--sap-footer-heading);
   font-size: 14px;
   font-weight: 700;
   margin: 0 0 12px;
@@ -87,7 +91,11 @@ footer .section-legal ul {
 /* Copyright */
 footer .section-copyright {
   padding-top: 16px;
-  border-top: 1px solid #3a3a3a;
+  border-top: 1px solid #dcdee0;
+  color: var(--sap-footer-muted);
+}
+
+footer .section-copyright p {
   color: var(--sap-footer-muted);
 }
 
