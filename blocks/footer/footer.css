@@ -86,9 +86,15 @@ footer .section ul {
  * image assets or content edits are needed. */
 footer .section-legal ul {
   display: flex;
+  flex-direction: row;
   gap: 20px;
   flex-wrap: wrap;
   align-items: center;
+  margin-bottom: 0;
+}
+
+footer .section-legal li {
+  margin: 0;
 }
 
 footer .section-legal a {
