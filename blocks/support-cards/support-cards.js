@@ -81,10 +81,24 @@ function decorateCard(row) {
   });
 }
 
+// Banner layout is [image | text]. Group everything except the image into a
+// single text column so the title/desc/CTA stack on the right (rather than
+// each becoming its own flex column). Mirrors the source alignment container.
+function groupBannerBody(row) {
+  const inner = row.querySelector(':scope > .support-card-inner') || row;
+  const image = inner.querySelector(':scope > .support-card-image');
+  const body = document.createElement('div');
+  body.className = 'support-card-body';
+  [...inner.children].forEach((c) => { if (c !== image) body.append(c); });
+  if (image) inner.append(image);
+  inner.append(body);
+}
+
 export default async function init(el) {
   const rows = [...el.querySelectorAll(':scope > div')];
   // A single card reads best as a full-width horizontal banner (e.g. the
   // Community award), unless the author already chose a variant.
   if (rows.length === 1 && !el.classList.contains('banner')) el.classList.add('banner');
   rows.forEach(decorateCard);
+  if (el.classList.contains('banner')) rows.forEach(groupBannerBody);
 }
