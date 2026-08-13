@@ -98,14 +98,17 @@ footer .section-legal a {
   width: 24px;
   height: 24px;
 
-  /* Hide the text label; the glyph is drawn with a mask below */
+  /* Hide the text label (font-size:0 so it takes no width); the glyph is drawn
+   * with a mask below */
   overflow: hidden;
+  font-size: 0;
   color: transparent;
   white-space: nowrap;
 }
 
 footer .section-legal a::before {
   content: "";
+  flex: none;
   width: 20px;
   height: 20px;
   background-color: var(--sap-footer-link);
