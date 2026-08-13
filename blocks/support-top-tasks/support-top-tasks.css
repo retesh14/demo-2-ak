@@ -78,3 +78,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .support-top-tasks * {
+    transition: none !important;
+  }
+}

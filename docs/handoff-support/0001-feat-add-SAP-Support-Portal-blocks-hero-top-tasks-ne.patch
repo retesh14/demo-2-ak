@@ -1,0 +1,745 @@
+From 28e429d9cdbb5f5a9b09f1101b814a8ef3dafb4e Mon Sep 17 00:00:00 2001
+From: "EMA (Cardinal Health EDS docs)" <noreply@localhost>
+Date: Tue, 11 Aug 2026 19:59:24 +0000
+Subject: [PATCH 1/6] =?UTF-8?q?feat:=20add=20SAP=20Support=20Portal=20bloc?=
+ =?UTF-8?q?ks=20(hero,=20top-tasks,=20news,=20feedback)=20=E2=80=94=20mock?=
+ =?UTF-8?q?ed?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Blocks for the support.sap.com home page, dynamic parts mocked:
+- support-hero: UDEX blue welcome + search launcher (Coveo/SAP-for-Me mocked)
+- support-top-tasks: quick-link tiles (personalization mocked as authored links)
+- support-news: spotlight feed (authored rows or same-origin sheet; live feed mocked)
+- support-feedback: Like/Dislike (push mocked client-side; note real endpoint)
+Features/Resources card grids reuse the existing sapphire-cards block.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+---
+ blocks/support-feedback/support-feedback.css  |  55 +++++++++
+ blocks/support-feedback/support-feedback.js   |  79 ++++++++++++
+ blocks/support-hero/support-hero.css          |  93 ++++++++++++++
+ blocks/support-hero/support-hero.js           |  89 ++++++++++++++
+ blocks/support-news/support-news.css          |  86 +++++++++++++
+ blocks/support-news/support-news.js           | 116 ++++++++++++++++++
+ .../support-top-tasks/support-top-tasks.css   |  80 ++++++++++++
+ blocks/support-top-tasks/support-top-tasks.js |  59 +++++++++
+ 8 files changed, 657 insertions(+)
+ create mode 100644 blocks/support-feedback/support-feedback.css
+ create mode 100644 blocks/support-feedback/support-feedback.js
+ create mode 100644 blocks/support-hero/support-hero.css
+ create mode 100644 blocks/support-hero/support-hero.js
+ create mode 100644 blocks/support-news/support-news.css
+ create mode 100644 blocks/support-news/support-news.js
+ create mode 100644 blocks/support-top-tasks/support-top-tasks.css
+ create mode 100644 blocks/support-top-tasks/support-top-tasks.js
+
+diff --git a/blocks/support-feedback/support-feedback.css b/blocks/support-feedback/support-feedback.css
+new file mode 100644
+index 0000000..ffc178f
+--- /dev/null
++++ b/blocks/support-feedback/support-feedback.css
+@@ -0,0 +1,55 @@
++.support-feedback {
++  --support-blue: #0040b0;
++
++  padding: var(--spacing-xl) var(--spacing-l);
++  background-color: light-dark(var(--color-gray-100), var(--color-gray-900));
++}
++
++.support-feedback .support-feedback-inner {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  justify-content: center;
++  gap: var(--spacing-m);
++  max-width: var(--grid-container-width);
++  margin: 0 auto;
++}
++
++.support-feedback .support-feedback-heading {
++  margin: 0;
++  font-size: var(--heading-font-size-xs);
++  font-weight: 500;
++  color: light-dark(var(--color-dark), var(--color-light));
++}
++
++.support-feedback .support-feedback-actions {
++  display: flex;
++  gap: var(--spacing-s);
++}
++
++.support-feedback .support-feedback-btn {
++  display: inline-flex;
++  align-items: center;
++  gap: 6px;
++  padding: 8px 18px;
++  border: 1px solid var(--support-blue);
++  border-radius: 20px;
++  background: transparent;
++  color: var(--support-blue);
++  font-family: inherit;
++  font-size: var(--body-font-size-m);
++  font-weight: 600;
++  cursor: pointer;
++  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
++}
++
++.support-feedback .support-feedback-btn:hover {
++  background-color: var(--support-blue);
++  color: #fff;
++}
++
++.support-feedback .support-feedback-thanks {
++  margin: 0;
++  font-weight: 600;
++  color: var(--support-blue);
++}
+diff --git a/blocks/support-feedback/support-feedback.js b/blocks/support-feedback/support-feedback.js
+new file mode 100644
+index 0000000..534f7d7
+--- /dev/null
++++ b/blocks/support-feedback/support-feedback.js
+@@ -0,0 +1,79 @@
++/*
++ * Support Feedback block — "How is your experience with this page?" (POC)
++ *
++ * Like / Dislike bar.
++ *
++ * DYNAMIC NOTE: on the live site this PUSHES to SAP (bin/support/content-feedback)
++ * and a Qualtrics intercept survey may fire. Here the push is MOCKED — clicking
++ * records the choice client-side and shows a thank-you, with NO network POST.
++ * To go live, replace recordFeedback() with a POST to the feedback endpoint
++ * (ideally via a same-origin proxy so no third-party key sits in the browser).
++ *
++ * Authored config rows (optional): heading, thanks.
++ */
++
++const DEFAULTS = {
++  heading: 'How is your experience with this page?',
++  thanks: 'Thanks for your feedback!',
++};
++
++function h(tag, attrs = {}, ...children) {
++  const node = document.createElement(tag);
++  for (const [key, value] of Object.entries(attrs)) {
++    if (value !== undefined && value !== null) {
++      if (key === 'class') node.className = value;
++      else if (key === 'text') node.textContent = value;
++      else node.setAttribute(key, value);
++    }
++  }
++  for (const child of children) if (child) node.append(child);
++  return node;
++}
++
++function readConfig(el) {
++  const config = {};
++  el.querySelectorAll(':scope > div').forEach((row) => {
++    const cells = row.querySelectorAll(':scope > div');
++    if (cells.length >= 2) {
++      const key = cells[0].textContent.trim().toLowerCase();
++      if (key) config[key] = cells[1].textContent.trim();
++    }
++  });
++  return config;
++}
++
++// MOCK push. Live: POST { page, rating } to the feedback endpoint / proxy.
++function recordFeedback(rating) {
++  try {
++    sessionStorage.setItem('support-feedback', JSON.stringify({ page: window.location.pathname, rating }));
++  } catch {
++    // no-op — sessionStorage may be unavailable
++  }
++}
++
++export default async function init(el) {
++  const config = { ...DEFAULTS, ...readConfig(el) };
++  el.textContent = '';
++
++  const heading = h('h5', { class: 'support-feedback-heading', text: config.heading });
++  const actions = h('div', { class: 'support-feedback-actions' });
++
++  const done = () => {
++    actions.textContent = '';
++    actions.append(h('p', { class: 'support-feedback-thanks', role: 'status', text: config.thanks }));
++  };
++
++  const like = h('button', { class: 'support-feedback-btn', type: 'button', 'aria-label': 'Like' }, h('span', { 'aria-hidden': 'true', text: '👍' }), h('span', { text: 'Yes' }));
++  const dislike = h('button', { class: 'support-feedback-btn', type: 'button', 'aria-label': 'Dislike' }, h('span', { 'aria-hidden': 'true', text: '👎' }), h('span', { text: 'No' }));
++  like.addEventListener('click', () => {
++    recordFeedback('like');
++    done();
++  });
++  dislike.addEventListener('click', () => {
++    recordFeedback('dislike');
++    done();
++  });
++
++  actions.append(like, dislike);
++  el.append(h('div', { class: 'support-feedback-inner' }, heading, actions));
++}
+diff --git a/blocks/support-hero/support-hero.css b/blocks/support-hero/support-hero.css
+new file mode 100644
+index 0000000..66e370e
+--- /dev/null
++++ b/blocks/support-hero/support-hero.css
+@@ -0,0 +1,93 @@
++.support-hero {
++  /* Matches the live SAP Support Portal blue panel */
++  --support-blue: #0040b0;
++
++  background-color: var(--support-blue);
++  color: #fff;
++  padding: var(--spacing-xxl) var(--spacing-l);
++}
++
++.support-hero .support-hero-inner {
++  max-width: 760px;
++  margin: 0 auto;
++  text-align: center;
++}
++
++.support-hero .support-hero-heading {
++  margin: 0 0 var(--spacing-m);
++  color: #fff;
++  font-size: 28px;
++  font-weight: 500;
++  line-height: 1.2;
++}
++
++.support-hero .support-hero-message {
++  margin: 0 auto var(--spacing-l);
++  max-width: 620px;
++  color: #fff;
++  font-size: var(--body-font-size-m);
++  line-height: var(--body-line-height);
++}
++
++.support-hero .support-hero-form {
++  display: flex;
++  align-items: center;
++  gap: var(--spacing-s);
++  width: 100%;
++  max-width: 684px;
++  margin: 0 auto;
++  padding: 4px 4px 4px 8px;
++  box-sizing: border-box;
++  background-color: #fff;
++  border-radius: 24px;
++}
++
++.support-hero .support-hero-input {
++  flex: 1;
++  min-width: 0;
++  height: 40px;
++  padding: 0 12px;
++  border: 0;
++  background: transparent;
++  color: var(--color-dark);
++  font-family: inherit;
++  font-size: var(--body-font-size-m);
++}
++
++.support-hero .support-hero-input::placeholder {
++  color: var(--color-gray-500);
++}
++
++.support-hero .support-hero-input:focus {
++  outline: none;
++}
++
++.support-hero .support-hero-form:focus-within {
++  outline: 2px solid #fff;
++  outline-offset: 2px;
++}
++
++.support-hero .support-hero-submit {
++  flex: 0 0 auto;
++  height: 40px;
++  padding: 0 20px;
++  border: 0;
++  border-radius: 20px;
++  background-color: var(--support-blue);
++  color: #fff;
++  font-family: inherit;
++  font-size: var(--body-font-size-m);
++  font-weight: 600;
++  cursor: pointer;
++  transition: opacity 0.2s ease-in-out;
++}
++
++.support-hero .support-hero-submit:hover {
++  opacity: 0.9;
++}
++
++@media (width <= 600px) {
++  .support-hero .support-hero-heading {
++    font-size: var(--heading-font-size-l);
++  }
++}
+diff --git a/blocks/support-hero/support-hero.js b/blocks/support-hero/support-hero.js
+new file mode 100644
+index 0000000..67e486e
+--- /dev/null
++++ b/blocks/support-hero/support-hero.js
+@@ -0,0 +1,89 @@
++/*
++ * Support Hero block — SAP Support Portal (POC)
++ *
++ * The blue "Welcome to the SAP Support Portal" panel with a search box.
++ *
++ * DYNAMIC NOTE: on the live site the search is a udex-search web component whose
++ * suggestions/results are served by Coveo, and submitting navigates to the
++ * (login-gated) SAP for Me search. Here the search is a MOCKED launcher: on
++ * submit it builds the SAP for Me search URL from the typed term and opens it —
++ * same pattern as our support-search block. No Coveo call, no secrets.
++ *
++ * Authored config rows (optional): heading, message, placeholder, cta, base, tab.
++ */
++
++const DEFAULTS = {
++  heading: 'Welcome to the SAP Support Portal',
++  message: 'Search for SAP Notes, SAP Knowledge Base Articles, SAP Community content, documentation and more in SAP for Me (login required).',
++  placeholder: 'Enter keywords or an SAP Note / KBA number',
++  cta: 'Search',
++  base: 'https://me.sap.com/servicessupport/search/',
++  tab: 'All',
++};
++
++function h(tag, attrs = {}, ...children) {
++  const node = document.createElement(tag);
++  for (const [key, value] of Object.entries(attrs)) {
++    if (value !== undefined && value !== null) {
++      if (key === 'class') node.className = value;
++      else if (key === 'text') node.textContent = value;
++      else node.setAttribute(key, value);
++    }
++  }
++  for (const child of children) if (child) node.append(child);
++  return node;
++}
++
++function readConfig(el) {
++  const config = {};
++  el.querySelectorAll(':scope > div').forEach((row) => {
++    const cells = row.querySelectorAll(':scope > div');
++    if (cells.length >= 2) {
++      const key = cells[0].textContent.trim().toLowerCase();
++      const val = cells[1].textContent.trim();
++      if (key) config[key] = val;
++    }
++  });
++  return config;
++}
++
++export default async function init(el) {
++  const config = { ...DEFAULTS, ...readConfig(el) };
++  el.textContent = '';
++
++  const inner = h(
++    'div',
++    { class: 'support-hero-inner' },
++    h('h2', { class: 'support-hero-heading', text: config.heading }),
++    h('p', { class: 'support-hero-message', text: config.message }),
++  );
++
++  const input = h('input', {
++    class: 'support-hero-input',
++    type: 'search',
++    name: 'q',
++    'aria-label': config.placeholder,
++    placeholder: config.placeholder,
++    autocomplete: 'off',
++  });
++  const submit = h('button', {
++    class: 'support-hero-submit',
++    type: 'submit',
++    'aria-label': config.cta,
++  }, h('span', { text: config.cta }));
++
++  const form = h('form', { class: 'support-hero-form', role: 'search' }, input, submit);
++  form.addEventListener('submit', (e) => {
++    e.preventDefault();
++    const q = input.value.trim();
++    if (!q) {
++      input.focus();
++      return;
++    }
++    const url = `${config.base}${encodeURIComponent(JSON.stringify({ q, tab: config.tab }))}`;
++    window.open(url, '_blank', 'noopener');
++  });
++
++  inner.append(form);
++  el.append(inner);
++}
+diff --git a/blocks/support-news/support-news.css b/blocks/support-news/support-news.css
+new file mode 100644
+index 0000000..3bb505f
+--- /dev/null
++++ b/blocks/support-news/support-news.css
+@@ -0,0 +1,86 @@
++.support-news {
++  --support-blue: #0040b0;
++
++  padding: var(--spacing-xxl) var(--spacing-l);
++}
++
++.support-news .support-news-inner {
++  display: grid;
++  grid-template-columns: 2fr 1fr;
++  gap: var(--spacing-xl);
++  max-width: var(--grid-container-width);
++  margin: 0 auto;
++}
++
++.support-news .support-news-heading {
++  margin: 0 0 var(--spacing-l);
++  font-size: var(--heading-font-size-l);
++  color: light-dark(var(--color-dark), var(--color-light));
++}
++
++.support-news .support-news-item {
++  padding: var(--spacing-l) 0;
++  border-top: 1px solid light-dark(var(--color-gray-200), var(--color-gray-700));
++}
++
++.support-news .support-news-item:first-of-type {
++  border-top: 0;
++  padding-top: 0;
++}
++
++.support-news .support-news-title {
++  margin: 0 0 var(--spacing-xs);
++  font-size: var(--heading-font-size-xs);
++}
++
++.support-news .support-news-title a {
++  color: light-dark(var(--color-dark), var(--color-light));
++  text-decoration: none;
++}
++
++.support-news .support-news-title a:hover {
++  color: var(--support-blue);
++  text-decoration: underline;
++}
++
++.support-news .support-news-date {
++  display: block;
++  margin-bottom: var(--spacing-xs);
++  font-size: var(--body-font-size-s);
++  color: light-dark(var(--color-gray-500), var(--color-gray-400));
++}
++
++.support-news .support-news-summary {
++  margin: 0;
++  font-size: var(--body-font-size-m);
++  line-height: var(--body-line-height);
++  color: light-dark(var(--color-gray-700), var(--color-gray-300));
++}
++
++.support-news .support-news-resources {
++  padding: var(--spacing-l);
++  background-color: light-dark(var(--color-gray-100), var(--color-gray-900));
++  border-radius: 8px;
++  height: fit-content;
++}
++
++.support-news .support-news-resources-heading {
++  margin: 0 0 var(--spacing-m);
++  font-size: var(--heading-font-size-xs);
++  color: light-dark(var(--color-dark), var(--color-light));
++}
++
++.support-news .support-news-resources ul {
++  margin: 0;
++  padding-left: var(--spacing-l);
++}
++
++.support-news .support-news-resources a {
++  color: var(--support-blue);
++}
++
++@media (width <= 800px) {
++  .support-news .support-news-inner {
++    grid-template-columns: 1fr;
++  }
++}
+diff --git a/blocks/support-news/support-news.js b/blocks/support-news/support-news.js
+new file mode 100644
+index 0000000..8f4b21a
+--- /dev/null
++++ b/blocks/support-news/support-news.js
+@@ -0,0 +1,116 @@
++/*
++ * Support News block — SAP Support Portal "Spotlight news" (POC)
++ *
++ * Renders a list of news articles (title, date, summary, link) beside a small
++ * "Resources" link list.
++ *
++ * DYNAMIC NOTE: on the live site this is fed dynamically (newsfeed_copy.nocache
++ * .html pulls the feed from AEM). Here it can render EITHER authored rows OR be
++ * pointed at a same-origin data endpoint via the 'feed' config (a sheet), which
++ * is the mock stand-in for the real feed — no external call.
++ *
++ * Authored structure:
++ *   optional config rows: heading, feed (endpoint), resourcesheading
++ *   article rows: each = heading (title, wraps a link) + date + summary
++ *   a trailing row whose cells are links → the Resources list
++ */
++
++const DEFAULTS = {
++  heading: 'Spotlight news',
++  feed: '',
++  resourcesheading: 'Resources',
++};
++
++function h(tag, attrs = {}, ...children) {
++  const node = document.createElement(tag);
++  for (const [key, value] of Object.entries(attrs)) {
++    if (value !== undefined && value !== null) {
++      if (key === 'class') node.className = value;
++      else if (key === 'text') node.textContent = value;
++      else node.setAttribute(key, value);
++    }
++  }
++  for (const child of children) if (child) node.append(child);
++  return node;
++}
++
++function articleEl(item) {
++  return h(
++    'article',
++    { class: 'support-news-item' },
++    h('h4', { class: 'support-news-title' }, h('a', { href: item.href || '#', text: item.title })),
++    item.date ? h('time', { class: 'support-news-date', text: item.date }) : null,
++    item.summary ? h('p', { class: 'support-news-summary', text: item.summary }) : null,
++  );
++}
++
++/** Fetch mock feed from a same-origin sheet endpoint; tolerate failure. */
++async function loadFeed(endpoint) {
++  try {
++    const resp = await fetch(endpoint, { headers: { accept: 'application/json' } });
++    if (!resp.ok) return null;
++    const json = await resp.json();
++    const raw = Array.isArray(json.data) ? json.data : json.items;
++    if (!Array.isArray(raw)) return null;
++    return raw.map((r) => ({
++      title: r.title, date: r.date, summary: r.summary, href: r.href,
++    }));
++  } catch {
++    return null;
++  }
++}
++
++export default async function init(el) {
++  const config = { ...DEFAULTS };
++  const authored = [];
++  const resourceLinks = [];
++
++  // Parse authored rows.
++  const rows = [...el.querySelectorAll(':scope > div')];
++  rows.forEach((row) => {
++    const cells = row.querySelectorAll(':scope > div');
++    const key = cells[0]?.textContent.trim().toLowerCase();
++    if (cells.length >= 2 && ['heading', 'feed', 'resourcesheading'].includes(key)) {
++      config[key] = cells[1].textContent.trim();
++      return;
++    }
++    const cell = cells[0] || row;
++    const links = [...cell.querySelectorAll('a')];
++    const heading = cell.querySelector('h1, h2, h3, h4, h5, h6');
++    if (heading && links.length) {
++      // article row: title link + date + summary paragraphs
++      const paras = [...cell.querySelectorAll('p')].map((p) => p.textContent.trim()).filter(Boolean);
++      authored.push({
++        title: heading.textContent.trim(),
++        href: links[0].getAttribute('href'),
++        date: paras[0] || '',
++        summary: paras[1] || paras[0] || '',
++      });
++    } else if (links.length > 1) {
++      // resources row: a list of links
++      links.forEach((a) => resourceLinks.push({ text: a.textContent.trim(), href: a.getAttribute('href') }));
++    }
++  });
++
++  el.textContent = '';
++
++  const feed = h('div', { class: 'support-news-feed' });
++  feed.append(h('h2', { class: 'support-news-heading', text: config.heading }));
++
++  let items = authored;
++  if (config.feed) {
++    const fetched = await loadFeed(config.feed);
++    if (fetched && fetched.length) items = fetched;
++  }
++  items.forEach((item) => feed.append(articleEl(item)));
++
++  const aside = h('aside', { class: 'support-news-resources' });
++  if (resourceLinks.length) {
++    aside.append(h('h4', { class: 'support-news-resources-heading', text: config.resourcesheading }));
++    const ul = h('ul');
++    resourceLinks.forEach((r) => ul.append(h('li', {}, h('a', { href: r.href, text: r.text }))));
++    aside.append(ul);
++  }
++
++  el.append(h('div', { class: 'support-news-inner' }, feed, aside));
++}
+diff --git a/blocks/support-top-tasks/support-top-tasks.css b/blocks/support-top-tasks/support-top-tasks.css
+new file mode 100644
+index 0000000..66167df
+--- /dev/null
++++ b/blocks/support-top-tasks/support-top-tasks.css
+@@ -0,0 +1,80 @@
++.support-top-tasks {
++  --support-blue: #0040b0;
++
++  padding: var(--spacing-xxl) var(--spacing-l);
++  background-color: light-dark(var(--color-gray-100), var(--color-gray-900));
++}
++
++.support-top-tasks .support-top-tasks-inner {
++  max-width: var(--grid-container-width);
++  margin: 0 auto;
++}
++
++.support-top-tasks .support-top-tasks-intro {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  justify-content: space-between;
++  gap: var(--spacing-m);
++  margin-bottom: var(--spacing-l);
++}
++
++.support-top-tasks .support-top-tasks-heading {
++  margin: 0;
++  max-width: 640px;
++  font-size: var(--heading-font-size-s);
++  font-weight: 500;
++  color: light-dark(var(--color-dark), var(--color-light));
++}
++
++.support-top-tasks .support-top-tasks-primary {
++  display: inline-block;
++  padding: 10px 20px;
++  border-radius: 4px;
++  background-color: var(--support-blue);
++  color: #fff;
++  font-weight: 600;
++  text-decoration: none;
++  white-space: nowrap;
++}
++
++.support-top-tasks .support-top-tasks-primary:hover {
++  opacity: 0.9;
++}
++
++.support-top-tasks .support-top-tasks-grid {
++  display: grid;
++  grid-template-columns: repeat(4, 1fr);
++  gap: var(--spacing-m);
++}
++
++.support-top-tasks .support-top-tasks-tile {
++  display: flex;
++  align-items: center;
++  min-height: 64px;
++  padding: var(--spacing-m) var(--spacing-l);
++  background-color: light-dark(var(--color-light), var(--color-gray-800));
++  border: 1px solid light-dark(var(--color-gray-200), var(--color-gray-700));
++  border-radius: 8px;
++  color: var(--support-blue);
++  font-weight: 600;
++  text-decoration: none;
++  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
++}
++
++.support-top-tasks .support-top-tasks-tile:hover {
++  box-shadow: 0 4px 12px 0 rgb(0 0 0 / 12%);
++  transform: translateY(-2px);
++}
++
++@media (width <= 900px) {
++  .support-top-tasks .support-top-tasks-grid {
++    grid-template-columns: repeat(2, 1fr);
++  }
++}
++
++@media (width <= 600px) {
++  .support-top-tasks .support-top-tasks-grid {
++    grid-template-columns: 1fr;
++  }
++}
+diff --git a/blocks/support-top-tasks/support-top-tasks.js b/blocks/support-top-tasks/support-top-tasks.js
+new file mode 100644
+index 0000000..b38aa33
+--- /dev/null
++++ b/blocks/support-top-tasks/support-top-tasks.js
+@@ -0,0 +1,59 @@
++/*
++ * Support Top Tasks block — SAP Support Portal (POC)
++ *
++ * "Log into SAP for Me…" intro + a grid of quick-link task tiles (Get Support,
++ * View Cases, Software Downloads, Manage Users, etc.).
++ *
++ * DYNAMIC NOTE: on the live site these tiles are PERSONALIZED per logged-in user
++ * (fetched via personalizedtoptasks.nocache.html / bin/fiji/es/user.support).
++ * Here they are MOCKED as static authored links — no per-user fetch. In
++ * production this block would hydrate from the personalization endpoint.
++ *
++ * Authored structure:
++ *   row 1: heading (intro text) + optional primary link (Access SAP for Me)
++ *   remaining rows: one link each = a task tile
++ */
++
++function decorate(el) {
++  const rows = [...el.querySelectorAll(':scope > div')];
++  el.textContent = '';
++
++  const inner = document.createElement('div');
++  inner.className = 'support-top-tasks-inner';
++
++  // First row = intro (heading + optional primary CTA)
++  const introRow = rows.shift();
++  if (introRow) {
++    const intro = document.createElement('div');
++    intro.className = 'support-top-tasks-intro';
++    const cell = introRow.querySelector(':scope > div') || introRow;
++    const heading = cell.querySelector('h1, h2, h3, h4, h5, h6');
++    if (heading) {
++      heading.classList.add('support-top-tasks-heading');
++      intro.append(heading);
++    }
++    const primary = cell.querySelector('a');
++    if (primary) {
++      primary.classList.add('support-top-tasks-primary');
++      intro.append(primary);
++    }
++    inner.append(intro);
++  }
++
++  // Remaining rows = task tiles (one link each)
++  const grid = document.createElement('div');
++  grid.className = 'support-top-tasks-grid';
++  rows.forEach((row) => {
++    const link = row.querySelector('a');
++    if (!link) return;
++    link.classList.add('support-top-tasks-tile');
++    grid.append(link);
++  });
++  if (grid.children.length) inner.append(grid);
++
++  el.append(inner);
++}
++
++export default async function init(el) {
++  decorate(el);
++}
+-- 
+2.39.5
+

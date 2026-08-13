@@ -47,7 +47,9 @@
   display: block;
   margin-bottom: var(--spacing-xs);
   font-size: var(--body-font-size-s);
-  color: light-dark(var(--color-gray-500), var(--color-gray-400));
+
+  /* gray-600/300 keeps small-text contrast >= WCAG AA 4.5:1 on the section bg */
+  color: light-dark(var(--color-gray-600), var(--color-gray-300));
 }
 
 .support-news .support-news-summary {
@@ -82,5 +84,11 @@
 @media (width <= 800px) {
   .support-news .support-news-inner {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .support-news * {
+    transition: none !important;
   }
 }

@@ -91,3 +91,9 @@
     font-size: var(--heading-font-size-l);
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .support-hero * {
+    transition: none !important;
+  }
+}

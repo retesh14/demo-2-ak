@@ -38,7 +38,7 @@ function articleEl(item) {
   return h(
     'article',
     { class: 'support-news-item' },
-    h('h4', { class: 'support-news-title' }, h('a', { href: item.href || '#', text: item.title })),
+    h('h3', { class: 'support-news-title' }, h('a', { href: item.href || '#', text: item.title })),
     item.date ? h('time', { class: 'support-news-date', text: item.date }) : null,
     item.summary ? h('p', { class: 'support-news-summary', text: item.summary }) : null,
   );
@@ -106,7 +106,7 @@ export default async function init(el) {
 
   const aside = h('aside', { class: 'support-news-resources' });
   if (resourceLinks.length) {
-    aside.append(h('h4', { class: 'support-news-resources-heading', text: config.resourcesheading }));
+    aside.append(h('h3', { class: 'support-news-resources-heading', text: config.resourcesheading }));
     const ul = h('ul');
     resourceLinks.forEach((r) => ul.append(h('li', {}, h('a', { href: r.href, text: r.text }))));
     aside.append(ul);

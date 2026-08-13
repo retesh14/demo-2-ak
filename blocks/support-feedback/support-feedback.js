@@ -55,7 +55,9 @@ export default async function init(el) {
   const config = { ...DEFAULTS, ...readConfig(el) };
   el.textContent = '';
 
-  const heading = h('h5', { class: 'support-feedback-heading', text: config.heading });
+  // A prompt, not a document section — use a <p> (styled as a heading) to avoid
+  // introducing a non-sequential heading level on the page (Lighthouse a11y).
+  const heading = h('p', { class: 'support-feedback-heading', text: config.heading });
   const actions = h('div', { class: 'support-feedback-actions' });
 
   const done = () => {
