@@ -38,6 +38,26 @@
     justify-content: center;
   }
 
+  /* Lead hero (top of page) is left-aligned to match the source; the
+   * bottom CTA banner keeps the centered default above. */
+  &.sapphire-hero-lead .sapphire-hero-inner {
+    text-align: left;
+  }
+
+  &.sapphire-hero-lead .sapphire-hero-heading {
+    margin-left: 0;
+    max-width: 640px;
+  }
+
+  &.sapphire-hero-lead .sapphire-hero-subcopy {
+    margin-left: 0;
+    max-width: 560px;
+  }
+
+  &.sapphire-hero-lead .sapphire-hero-ctas {
+    justify-content: flex-start;
+  }
+
   .sapphire-hero-cta {
     display: inline-block;
     padding: 12px 24px;

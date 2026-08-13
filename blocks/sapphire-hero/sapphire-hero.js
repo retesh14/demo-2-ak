@@ -21,6 +21,11 @@ function decorateButtons(el) {
 }
 
 export default async function init(el) {
+  // The first sapphire-hero on the page is the lead hero (left-aligned, like
+  // the source); any later instance is the centered bottom CTA banner.
+  const isLead = document.querySelector('.sapphire-hero') === el;
+  if (isLead) el.classList.add('sapphire-hero-lead');
+
   const rows = [...el.querySelectorAll(':scope > div')];
   el.textContent = '';
 
