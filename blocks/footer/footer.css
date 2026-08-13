@@ -86,9 +86,8 @@ footer .section ul {
  * image assets or content edits are needed. */
 footer .section-legal ul {
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   gap: 20px;
-  flex-wrap: wrap;
   align-items: center;
   margin-bottom: 0;
 }
