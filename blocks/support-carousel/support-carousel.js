@@ -147,4 +147,8 @@ export default async function init(el) {
   track.addEventListener('scroll', () => window.requestAnimationFrame(update), { passive: true });
   window.addEventListener('resize', update);
   update();
+  // Re-evaluate once layout has settled (flex widths, images) so the Next
+  // button isn't left disabled when the track actually overflows.
+  window.requestAnimationFrame(update);
+  window.addEventListener('load', update);
 }
