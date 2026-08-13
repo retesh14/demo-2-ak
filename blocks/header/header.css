@@ -481,3 +481,18 @@ header .action-wrapper button {
 header .action-wrapper button:hover {
   color: var(--sap-blue);
 }
+
+/* Vertically center the primary nav within the header bar (desktop).
+ * The grid stretches each section to the header height, but the nav list
+ * was top-aligned while the brand + actions centre — this evens them up. */
+@media (width >= 900px) {
+  header .main-nav-section > .default-content {
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+  }
+
+  header .main-nav-section .main-nav-list {
+    align-items: center;
+  }
+}
