@@ -28,6 +28,40 @@ header {
     text-decoration: none;
   }
 
+  :focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .a11y-clip,
+  .text,
+  .brand-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    clip-path: inset(50%);
+  }
+
+  .skip-link:focus {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: var(--spacing-s);
+    overflow: visible;
+    clip-path: none;
+    z-index: 1002;
+    background-color: light-dark(var(--color-light), var(--color-dark));
+    outline: 2px solid currentcolor;
+  }
+
   .btn {
     margin-block: 6px;
   }
@@ -58,13 +92,6 @@ header {
       .icon {
         width: 24px;
         height: 24px;
-      }
-
-      .text {
-        display: block;
-        width: 0;
-        height: 0;
-        overflow: hidden;
       }
     }
   }
@@ -97,6 +124,12 @@ header {
 
     li {
       margin-block: 12px;
+    }
+
+    ul:first-child {
+      li:first-child {
+        margin-top: 0;
+      }
     }
 
     ul:not(:has(+ *)) {
@@ -146,13 +179,6 @@ header {
           width: var(--logo-width);
           height: var(--logo-height);
         }
-
-        .brand-text {
-          display: block;
-          width: 0;
-          height: 0;
-          overflow: hidden;
-        }
       }
     }
 
@@ -165,7 +191,10 @@ header {
     grid-area: actions;
     max-height: 64px;
     overflow: hidden;
-    transition: all 0.2s ease-in-out;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: all 0.2s ease-in-out;
+    }
 
     > .default-content {
       display: flex;
@@ -211,6 +240,16 @@ header {
 
     .main-nav-link {
       display: block;
+      width: 100%;
+      appearance: none;
+      background: none;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: var(--color-link);
+      text-align: inherit;
+      cursor: pointer;
       line-height: 64px;
     }
 
@@ -280,6 +319,10 @@ header {
       }
     }
 
+    .menu {
+      left: calc(0px - var(--spacing-l));
+    }
+
     .mega-menu {
       > .fragment-content {
         display: grid;
@@ -300,10 +343,10 @@ header {
         max-width: initial;
         margin: 0;
       }
+    }
 
-      .action-wrapper.more {
-        display: none;
-      }
+    .action-wrapper.nav-toggle {
+      display: none;
     }
 
     .main-nav-section {
@@ -312,12 +355,26 @@ header {
         gap: var(--spacing-l);
       }
 
+      .main-nav-link {
+        width: auto;
+      }
+
+      .menu {
+        right: initial;
+        min-width: 220px;
+        padding: var(--spacing-l);
+      }
+
       .main-nav-item {
         border-bottom: initial;
 
         > * {
           max-width: initial;
           margin: initial;
+        }
+
+        &:has(> .menu) {
+          position: relative;
         }
 
         &.is-open {
@@ -363,4 +420,64 @@ header {
       }
     }
   }
+}
+
+/* -----------------------------------------------------------------------------
+ * SAP events theme (additive) — light top bar, SAP-blue accents.
+ * -------------------------------------------------------------------------- */
+/* stylelint-disable-next-line no-duplicate-selectors */
+header {
+  --sap-blue: #0070f2;
+  --sap-header-bg: #f5f6f7;
+  --sap-text: #1d2d3e;
+
+  background-color: var(--sap-header-bg);
+  border-bottom: 1px solid #e5e5e5;
+  color: var(--sap-text);
+}
+
+header .brand-section a {
+  display: inline-flex;
+  align-items: center;
+  color: var(--sap-blue);
+  font-weight: 700;
+  font-size: 1.75rem;
+  letter-spacing: 0.03em;
+}
+
+/* SAP brand is a wordmark — show the styled "SAP" text, hide the placeholder icon */
+header .brand-section .brand-text {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  clip-path: none;
+}
+
+header .brand-section .icon-logo {
+  display: none;
+}
+
+header .main-nav-link {
+  color: var(--sap-text);
+  font-weight: 600;
+}
+
+header .main-nav-link:hover,
+header .main-nav-link[aria-current="page"] {
+  color: var(--sap-blue);
+}
+
+header .main-nav-item > .main-nav-link[aria-current="page"] {
+  box-shadow: inset 0 -3px 0 var(--sap-blue);
+}
+
+header .action-wrapper button {
+  color: var(--sap-text);
+}
+
+header .action-wrapper button:hover {
+  color: var(--sap-blue);
 }
