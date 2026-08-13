@@ -86,11 +86,15 @@ function decorateCard(row) {
 // each becoming its own flex column). Mirrors the source alignment container.
 function groupBannerBody(row) {
   const inner = row.querySelector(':scope > .support-card-inner') || row;
-  const image = inner.querySelector(':scope > .support-card-image');
+  const imageEl = inner.querySelector('.support-card-image');
+  // The image may be wrapped (e.g. in a <p>); find its top-level ancestor
+  // inside inner so we keep the whole image column out of the text body.
+  let imageCol = imageEl;
+  while (imageCol && imageCol.parentElement !== inner) imageCol = imageCol.parentElement;
   const body = document.createElement('div');
   body.className = 'support-card-body';
-  [...inner.children].forEach((c) => { if (c !== image) body.append(c); });
-  if (image) inner.append(image);
+  [...inner.children].forEach((c) => { if (c !== imageCol) body.append(c); });
+  if (imageCol) inner.prepend(imageCol);
   inner.append(body);
 }
 
