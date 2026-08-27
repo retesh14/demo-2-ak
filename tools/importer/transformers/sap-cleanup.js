@@ -14,23 +14,36 @@ const TransformHook = { beforeTransform: 'beforeTransform', afterTransform: 'aft
 
 export default function transform(hookName, element, payload) {
   if (hookName === TransformHook.beforeTransform) {
-    // Decorative hero background video (autoplay/muted/loop MP4) — not authorable.
-    // Verified in cleaned.html: <div class="cs_hero__video-container"><video .../></div>
-    WebImporter.DOMUtils.remove(element, ['.cs_hero__video-container']);
-
     // Play-button overlay on the real video block. The data-video HLS URL lives on
     // the parent div.cs_video__container (NOT on the button), so removing the button
     // does not disturb what the video-poster parser needs.
     // Verified in cleaned.html: <button class="cs_play" ...></button>
     WebImporter.DOMUtils.remove(element, ['button.cs_play']);
+
+    // NOTE: the decorative hero background video (div.cs_hero__video-container) is
+    // intentionally NOT removed here. The hero parser reads its MP4 via
+    // previousElementSibling and emits it as the hero background link, so it must
+    // still be in the DOM when parsers run. It is removed in afterTransform below,
+    // after the hero parser has consumed it.
   }
 
   if (hookName === TransformHook.afterTransform) {
+    // Now safe to drop the leftover decorative hero video container (the hero
+    // parser has already extracted its MP4 URL in the parse phase).
+    WebImporter.DOMUtils.remove(element, ['.cs_hero__video-container']);
+
     // Non-authorable SAP site chrome (present on the live page shell around <main>).
+    // Includes the floating "Ask Joule" button and the "Contact us" complementary
+    // aside that SAP injects at the top of <main>. The real page CTAs (Contact us /
+    // Explore Business AI in the card block) are <a> links, not <button>s, so
+    // removing button/aside does not touch authorable content.
     WebImporter.DOMUtils.remove(element, [
       'header',
       'footer',
       'nav',
+      'aside',
+      '[role="complementary"]',
+      'button',
       '[class*="breadcrumb"]',
       '[id*="sidebar"]',
       '[class*="cookie"]',

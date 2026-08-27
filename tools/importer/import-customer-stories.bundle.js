@@ -157,14 +157,17 @@ var CustomImportScript = (() => {
   var TransformHook = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
   function transform(hookName, element, payload) {
     if (hookName === TransformHook.beforeTransform) {
-      WebImporter.DOMUtils.remove(element, [".cs_hero__video-container"]);
       WebImporter.DOMUtils.remove(element, ["button.cs_play"]);
     }
     if (hookName === TransformHook.afterTransform) {
+      WebImporter.DOMUtils.remove(element, [".cs_hero__video-container"]);
       WebImporter.DOMUtils.remove(element, [
         "header",
         "footer",
         "nav",
+        "aside",
+        '[role="complementary"]',
+        "button",
         '[class*="breadcrumb"]',
         '[id*="sidebar"]',
         '[class*="cookie"]',
