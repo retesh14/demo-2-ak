@@ -79,6 +79,103 @@
   }
 }
 
+/* ==========================================================================
+   PwC customer-story variants (structural, no variant class present)
+   Extracted from source computed styles (.cs_details__row / .cs_metrics__row /
+   .cs_quote__row). Scoped tightly via :has() so base columns layout on other
+   pages is untouched.
+   ========================================================================== */
+
+/* --- Facts strip: 3 text columns, each = uppercase label + value ---------- */
+.columns:has(> .row > .col-3):not(:has(.col-4)):not(:has(picture)):not(:has(blockquote)):not(:has(a)):not(:has(h1, h2, h3, h4, h5, h6)):has(.col > p:nth-child(2)):not(:has(.col > p:nth-child(3))) {
+  --columns-gap: var(--spacing-l); /* 24px */
+
+  text-align: center;
+
+  .col > p:first-child {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 15.4px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgb(71 94 117);
+  }
+
+  .col > p:nth-child(2) {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 36px;
+    color: rgb(0 0 0);
+  }
+}
+
+/* --- Stat callouts: 2 text columns, each = big number + caption ----------- */
+.columns:has(> .row > .col-2):not(:has(.col-3)):not(:has(picture)):not(:has(blockquote)):not(:has(a)):not(:has(h1, h2, h3, h4, h5, h6)):has(.col > p:nth-child(2)):not(:has(.col > p:nth-child(3))) {
+  --columns-gap: 40px;
+
+  text-align: center;
+
+  .col > p:first-child {
+    margin: 0 0 16px;
+    font-size: 64px;
+    font-weight: 500;
+    line-height: 70.4px;
+    background-image: linear-gradient(266deg, rgb(82 21 205) 31%, rgb(155 118 255) 72%, rgb(120 88 255) 132%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .col > p:nth-child(2) {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 27px;
+    color: rgb(0 0 0);
+  }
+}
+
+/* --- Pull-quote + image bands: quote/author/role | supporting image ------- */
+.columns:has(blockquote):has(picture) {
+  --columns-gap: 40px;
+
+  blockquote {
+    margin: 0 0 40px;
+    padding: 0;
+    border: 0;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 44.8px;
+    color: rgb(0 0 0);
+
+    p {
+      margin: 0;
+      font-size: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+      color: inherit;
+    }
+  }
+
+  /* author name + role */
+  .col-1 > p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: rgb(34 53 72);
+  }
+
+  .col-2 img {
+    border-radius: 12px;
+    object-fit: cover;
+    width: 100%;
+  }
+}
+
 @media (width >= 900px) {
   .columns {
     .row {

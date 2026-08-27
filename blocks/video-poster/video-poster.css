@@ -1,17 +1,26 @@
-/* Video Poster block — click-to-play facade (poster + play button → video). */
+/* Video Poster block — click-to-play facade (poster + play button → video).
+   Values extracted from source computed styles (sap.com/about/customer-stories/pwc). */
 .video-poster {
-  margin: 0 auto;
+  margin: 48px auto;
   max-width: var(--grid-container-width, 1200px);
 }
 
+/* Title — source: 64px / weight 500 / line-height 1.1 / centered / black,
+   constrained width, 56px below. Mobile-first: scale down on small screens. */
 .video-poster .video-poster-title {
-  margin: 0 0 16px;
+  margin: 0 auto 32px;
+  max-width: 1000px;
+  font-weight: 500;
+  font-size: clamp(2rem, 4.4vw, 64px);
+  line-height: 1.1;
+  color: rgb(0 0 0);
+  text-align: center;
 }
 
 .video-poster .video-poster-frame {
   position: relative;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 12px;
   aspect-ratio: 16 / 9;
   background: #000;
 }
@@ -25,16 +34,17 @@
   object-fit: cover;
 }
 
+/* Play button — source: 80x80 circle, rgba(0,0,0,0.5), no border/shadow, white triangle. */
 .video-poster .video-poster-play {
   position: absolute;
   inset: 0;
   margin: auto;
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 80px;
   border: 0;
   border-radius: 50%;
   cursor: pointer;
-  background: rgb(0 0 0 / 55%);
+  background: rgb(0 0 0 / 50%);
   transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 
@@ -45,12 +55,22 @@
   left: 54%;
   transform: translate(-50%, -50%);
   border-style: solid;
-  border-width: 14px 0 14px 24px;
+  border-width: 15px 0 15px 26px;
   border-color: transparent transparent transparent #fff;
 }
 
 .video-poster .video-poster-play:hover,
 .video-poster .video-poster-play:focus-visible {
-  background: var(--color-brand, #0070f2);
+  background: rgb(0 0 0 / 70%);
   transform: scale(1.05);
+}
+
+@media (width >= 900px) {
+  .video-poster {
+    margin: 120px auto;
+  }
+
+  .video-poster .video-poster-title {
+    margin-bottom: 56px;
+  }
 }

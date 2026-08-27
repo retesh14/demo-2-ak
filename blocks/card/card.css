@@ -83,3 +83,99 @@
     }
   }
 }
+
+/* ============================================================
+   PwC "Take the next step" CTA cards (2-up)
+   Source: sap.com/about/customer-stories/pwc.html .cs_alpha__section
+   Values extracted from source computed styles.
+   Guard: only the multi-card CTA usage (2 rows, no image). Single
+   event cards (one .card-inner, with picture) are NOT matched, so
+   this appended block never restyles bare cards elsewhere.
+   ============================================================ */
+main .card:not(:has(picture)):has(> div + div) {
+  /* container becomes the 2-up flex row; strip single-card chrome */
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  overflow: visible;
+  background-color: transparent;
+  box-shadow: none;
+  color: rgb(255 255 255);
+  transition: none;
+
+  /* each card box: row 1 (.card-inner) and row 2 (undecorated div) */
+  > .card-inner,
+  > div:not(.card-inner) {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    padding: 40px;
+    border: 1px solid rgb(255 255 255 / 0%);
+    border-radius: 12px;
+  }
+
+  > .card-inner { background-color: #354a5f; }
+  > div:not(.card-inner) { background-color: #002a86; }
+
+  /* neutralize inherited content-wrapper padding (40px lives on the box) */
+  .card-content-container,
+  > div:not(.card-inner) > div {
+    padding: 0;
+  }
+
+  h4 {
+    margin: 0 0 20px;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 38.4px;
+    color: rgb(255 255 255);
+  }
+
+  /* override base ".card-content-container :first-child { font-size: 16px }" */
+  .card-content-container :first-child { font-size: 32px; }
+
+  p {
+    margin: 0 0 40px;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 30px;
+    color: rgb(255 255 255);
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    width: fit-content;
+    margin: 0;
+    padding: 11px 13px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 18px;
+    color: #0040b0;
+    background-color: #fff;
+    border: 1px solid #475e75;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+
+  &:hover { transform: none; box-shadow: none; }
+
+  /* CTA container (row 1): base right-aligns + pads -- reset for this usage */
+  .card-cta-container {
+    margin: 0;
+    padding: 0;
+    justify-content: flex-start;
+  }
+
+  /* CTA paragraph in undecorated card 2 is last-child: drop trailing margin */
+  > div:not(.card-inner) p:last-child { margin-bottom: 0; }
+}
+
+@media (width >= 900px) {
+  main .card:not(:has(picture)):has(> div + div) {
+    flex-direction: row;
+    align-items: stretch;
+  }
+}
