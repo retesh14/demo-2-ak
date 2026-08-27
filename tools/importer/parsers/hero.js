@@ -34,13 +34,31 @@ export default function parse(element, { document }) {
 
   const cells = [];
 
-  // Row 2: background asset as a bare .mp4 link
+  // Row 2: background asset.
+  // The project hero block (blocks/hero/hero.js) only promotes a background MP4
+  // when the background cell contains an <a href="*.mp4"> that WRAPS a <picture>
+  // (the picture acts as the video poster). So emit link(mp4) > picture > img,
+  // using the first hero/collage image as the poster when one is available.
   if (videoEl) {
     const mp4Url = videoEl.getAttribute('src') || videoEl.getAttribute('data-video');
     if (mp4Url) {
       const link = document.createElement('a');
       link.href = mp4Url;
-      link.textContent = mp4Url;
+
+      // Poster image: prefer the video's own poster attr, else the first collage
+      // image that follows the hero section, else leave the link bare.
+      const posterSrc = videoEl.getAttribute('poster')
+        || document.querySelector('.cs_collage__section img, .cs_collage__column img')?.getAttribute('src');
+      if (posterSrc) {
+        const picture = document.createElement('picture');
+        const img = document.createElement('img');
+        img.src = posterSrc;
+        img.alt = '';
+        picture.append(img);
+        link.append(picture);
+      } else {
+        link.textContent = mp4Url;
+      }
       cells.push([link]);
     } else {
       cells.push(['']);

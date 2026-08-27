@@ -43,6 +43,7 @@ var CustomImportScript = (() => {
 
   // tools/importer/parsers/hero.js
   function parse(element, { document: document2 }) {
+    var _a;
     let videoEl = null;
     const prev = element.previousElementSibling;
     if (prev) {
@@ -59,7 +60,17 @@ var CustomImportScript = (() => {
       if (mp4Url) {
         const link = document2.createElement("a");
         link.href = mp4Url;
-        link.textContent = mp4Url;
+        const posterSrc = videoEl.getAttribute("poster") || ((_a = document2.querySelector(".cs_collage__section img, .cs_collage__column img")) == null ? void 0 : _a.getAttribute("src"));
+        if (posterSrc) {
+          const picture = document2.createElement("picture");
+          const img = document2.createElement("img");
+          img.src = posterSrc;
+          img.alt = "";
+          picture.append(img);
+          link.append(picture);
+        } else {
+          link.textContent = mp4Url;
+        }
         cells.push([link]);
       } else {
         cells.push([""]);
