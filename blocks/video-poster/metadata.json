@@ -1,0 +1,6 @@
+{
+  "name": "Video Poster",
+  "description": "A click-to-play video facade: poster image + play button that swaps in a self-hosted MP4 or HLS (.m3u8) player on interaction.",
+  "variants": [],
+  "authoring": "Row 1: heading (optional). Row 2: poster image. Row 3: link to the video source (.mp4 or .m3u8)."
+}
