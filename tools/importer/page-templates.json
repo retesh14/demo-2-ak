@@ -1,0 +1,30 @@
+{
+  "metadata": { "projectType": "da" },
+  "templates": [
+    {
+      "name": "customer-stories",
+      "urls": ["https://www.sap.com/about/customer-stories/pwc.html"],
+      "description": "SAP customer story (PwC): hero w/ background video, facts strip, stat callouts, narrative text sections, pull-quote+image bands, self-hosted video, CTA cards.",
+      "blocks": [
+        { "name": "hero", "instances": [".cs_hero__section"] },
+        { "name": "columns", "instances": [".cs_details__row", ".cs_metrics__row", ".cs_quote__section .cs_quote__row"] },
+        { "name": "video-poster", "instances": [".cs_video__section:nth-of-type(12)", "section.cs_video__section:last-of-type"] },
+        { "name": "card", "instances": [".cs_alpha__section .cs_alpha__cards", ".cs_alpha__section"] }
+      ],
+      "sections": [
+        { "id": "hero", "name": "Hero", "selector": [".cs_hero__section"], "style": null, "blocks": ["hero"], "defaultContent": [".cs_collage__section"] },
+        { "id": "facts", "name": "Facts strip + intro", "selector": [".cs_details__section"], "style": "light", "blocks": ["columns"], "defaultContent": [".cs_details__section p"] },
+        { "id": "stats", "name": "Stat callouts", "selector": [".cs_metrics__section"], "style": "light", "blocks": ["columns"], "defaultContent": [] },
+        { "id": "fullimg", "name": "Full-width image band", "selector": ["section.cs_video__section:nth-of-type(5)"], "style": null, "blocks": [], "defaultContent": ["section.cs_video__section:nth-of-type(5) img"] },
+        { "id": "opportunity", "name": "The Opportunity", "selector": ["section.cs_information__section:nth-of-type(6)"], "style": "light", "blocks": [], "defaultContent": ["section.cs_information__section:nth-of-type(6)"] },
+        { "id": "quote1", "name": "Pull-quote band 1", "selector": ["section.cs_quote__section:nth-of-type(7)"], "style": "light", "blocks": ["columns"], "defaultContent": [] },
+        { "id": "solution", "name": "The Solution", "selector": ["section.cs_information__section:nth-of-type(8)"], "style": "light", "blocks": [], "defaultContent": ["section.cs_information__section:nth-of-type(8)"] },
+        { "id": "quote2", "name": "Pull-quote band 2", "selector": ["section.cs_quote__section:nth-of-type(9)"], "style": "light", "blocks": ["columns"], "defaultContent": [] },
+        { "id": "result", "name": "The Result", "selector": ["section.cs_information__section:nth-of-type(10)"], "style": "light", "blocks": [], "defaultContent": ["section.cs_information__section:nth-of-type(10)"] },
+        { "id": "quote3", "name": "Pull-quote band 3", "selector": ["section.cs_quote__section:nth-of-type(11)"], "style": "light", "blocks": ["columns"], "defaultContent": [] },
+        { "id": "video", "name": "Video block", "selector": ["section.cs_video__section:nth-of-type(12)"], "style": null, "blocks": ["video-poster"], "defaultContent": [] },
+        { "id": "cta", "name": "Take the next step", "selector": [".cs_alpha__section"], "style": "light", "blocks": ["card"], "defaultContent": [".cs_alpha__section > .cs_container > *:not(.cs_alpha__cards)"] }
+      ]
+    }
+  ]
+}
