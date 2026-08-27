@@ -1,0 +1,19 @@
+{
+  "status": "success",
+  "url": "https://www.sap.com/about/customer-stories/pwc.html",
+  "path": "about/customer-stories/pwc",
+  "timestamp": "2026-08-27T16:13:39.879Z",
+  "title": "PwC",
+  "template": "customer-stories",
+  "blocks": [
+    "hero",
+    "columns",
+    "columns",
+    "columns",
+    "columns",
+    "columns",
+    "columns",
+    "video-poster",
+    "card"
+  ]
+}

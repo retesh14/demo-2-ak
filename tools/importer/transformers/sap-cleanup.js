@@ -42,5 +42,27 @@ export default function transform(hookName, element, payload) {
       'script',
       'style',
     ]);
+
+    // Analytics/marketing tracking-pixel beacons that inject <img> tags into the
+    // DOM (Bing UET, Twitter/X ads, Meta Pixel, DoubleClick, etc.). These are not
+    // content — strip any image whose src points at a known tracking host.
+    const TRACKING_HOSTS = [
+      'bat.bing.com',
+      't.co/',
+      'analytics.twitter.com',
+      'ads-twitter.com',
+      'facebook.com/tr',
+      'doubleclick.net',
+      'google-analytics.com',
+      'googletagmanager.com',
+      'px.ads.linkedin.com',
+      'demdex.net',
+    ];
+    element.querySelectorAll('img[src]').forEach((img) => {
+      const src = img.getAttribute('src') || '';
+      if (TRACKING_HOSTS.some((host) => src.includes(host))) {
+        img.remove();
+      }
+    });
   }
 }
